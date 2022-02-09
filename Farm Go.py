@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from sys import exit
 from Scripts import Soil
+from Scripts import Waterfont
 
 pygame.init()
 
@@ -34,11 +35,16 @@ all_sprites = pygame.sprite.Group()
 soils = drawGrid(int(width/256) * 16, int(width/7), int(height/2.5))
 all_sprites.add(soils)
 
+#* set Waterfont
+waterfont = Waterfont.Waterfont(int((width/8)*4.4), int(height/4), int(width/256) * 64)
+all_sprites.add(waterfont)
+
 clock = pygame.time.Clock()
 
 #! main loop
 while True:
     clock.tick(60)
+    print(clock.get_fps())
     screen.blit(bgimg, (0, 0))
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -46,6 +52,7 @@ while True:
             exit()
 
     all_sprites.draw(screen)
+    all_sprites.update()
     pygame.display.update()
 
 

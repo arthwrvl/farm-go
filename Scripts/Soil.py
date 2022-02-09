@@ -10,8 +10,8 @@ class Soil(pygame.sprite.Sprite):
         self.dry = []
         self.prepared = []
         for i in range(1,4):
-            self.dry.append(pygame.image.load(f"data/sprites/scenary/Soil/Dry/{i}.png"))
-            self.prepared.append(pygame.image.load(f"data/sprites/scenary/Soil/Prepared/{i}.png"))
+            self.dry.append(pygame.image.load(f"data/sprites/Scenary/Soil/Dry/{i}.png"))
+            self.prepared.append(pygame.image.load(f"data/sprites/Scenary/Soil/Prepared/{i}.png"))
 
         #*set state
         self.state = 0 # 0 = dry, 1 = prepared, 2 = planted, 3 = need water
@@ -41,7 +41,6 @@ class Soil(pygame.sprite.Sprite):
         elif self.state == 3:
             print("need water")
             #add water sprite
-        self.update()
 
     def interact(self):
         if self.state == 0:
