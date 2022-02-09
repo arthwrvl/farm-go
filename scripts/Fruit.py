@@ -1,4 +1,5 @@
-import pygame, random
+import pygame
+from random import randint
 from pygame.locals import *
 
 
@@ -26,7 +27,7 @@ class Fruit:
        
     @classmethod
     def random_fruit(cls):
-        ID = random.randint(0, 9)
+        ID = randint(0, 9)
         name = cls.fruits[ID][0]
         shelf_life = cls.fruits[ID][1]
         img = cls.fruits[ID][2]
@@ -35,3 +36,29 @@ class Fruit:
 
     def show_img(self, screen, x, y):
         screen.blit(self.img, (x, y)) 
+
+    @property
+    def shelf_life(self):
+        return self._shelf_life
+
+    @shelf_life.setter
+    def shelf_life(self, value):
+        value = int(value)
+        
+        if value < 10:
+            value = 10
+        elif value > 60:
+            value = 60
+
+        self._shelf_life = value
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        value = str(value).title()
+
+        self._name = value
+
