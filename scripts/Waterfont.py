@@ -23,7 +23,7 @@ class Waterfont(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
     
     def update(self):
-        self.spriteIndex += 0.15
+        self.spriteIndex += 0.1
         if self.spriteIndex >= len(self.sprites):
             self.spriteIndex = 0
         self.image = self.sprites[int(self.spriteIndex)]

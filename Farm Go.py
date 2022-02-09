@@ -3,55 +3,108 @@ from pygame.locals import *
 from sys import exit
 from scripts import Soil
 from scripts import Waterfont
+from scripts import Player
+
+
 pygame.init()
+#region Constants
+WIDTH = int(pygame.display.Info().current_w/2)
+HEIGHT = int(pygame.display.Info().current_h/2)
+TITLE = "Farm Go"
+FPS = 60
 
-#* draw soil grid on screen
-def drawGrid(cellsize, width, height):
-    soils = list()
-    gap = int(cellsize/16)
-    for i in range(4):
-        for j in range(3):
-            solo = Soil.Soil(width + i * cellsize + gap*i, height + j * cellsize + gap*j, cellsize)
-            print(solo.rect.topleft)
-            soils.append(solo)
-    return soils
+BACKGROUND_IMAGE = pygame.image.load("data/sprites/scenary/background.png")
+BACKGROUND_IMAGE = pygame.transform.scale(BACKGROUND_IMAGE, (WIDTH, HEIGHT))
 
-#!get screen size
-height = pygame.display.Info().current_h
-width = pygame.display.Info().current_w
+PLAYER_WIDTH = int(WIDTH/256) * 16
+#endregion
 
-#* set background image scale
-bgimg = pygame.image.load("data/sprites/scenary/background.png")
-bgimg = pygame.transform.scale(bgimg, (width, height))
+class FarmGo:
+    def __init__(self):
+        pygame.init()
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption(TITLE)
+        self.clock = pygame.time.Clock()
+        self.running = True
+    
+    def newGame(self):
+        self.allSprites = pygame.sprite.Group()
+        self.soils = self.drawGrid(int(WIDTH/256) * 16, int(WIDTH/7), int(HEIGHT/2.5))
+        self.allSprites.add(self.soils)
+        self.waterfont = Waterfont.Waterfont(int((WIDTH/8)*4.4), int(HEIGHT/4), int(WIDTH/256) * 64)
+        self.allSprites.add(self.waterfont)
+        self.player = Player.Player(int((WIDTH/2) - (PLAYER_WIDTH/2)), int((HEIGHT/2) - (PLAYER_WIDTH*1.5/2)), PLAYER_WIDTH, PLAYER_WIDTH/10)
+        self.allSprites.add(self.player)
+        self.run()
+    
+    def run(self):
+        while self.running:
+            self.clock.tick(FPS)
+            self.events()
+            self.updateSprites()
+            self.drawSprites()
 
-#* set display
-screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN)
-pygame.display.set_caption("Farm Go")
+    def checkSoilColision(self):
+        self.soilColision = pygame.sprite.spritecollide(self.player, self.soils, False)
+        if self.soilColision:
+            if self.player.selectedSoil != {}:
+                if self.player.selectedSoil != self.soilColision[len(self.soilColision) - 1]:
+                    self.player.selectedSoil.deselect()
+                    self.player.selectedSoil = self.soilColision[len(self.soilColision) - 1]
+                    self.player.selectedSoil.select()
+            else:
+                self.player.selectedSoil = self.soilColision[len(self.soilColision) - 1]
+                self.player.selectedSoil.select()          
+        else:
+            if self.player.selectedSoil != {}:
+                self.player.selectedSoil.deselect()
+                self.player.selectedSoil = {}
 
-all_sprites = pygame.sprite.Group()
+    def events(self):
+        self.checkSoilColision()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                if self.running:
+                    self.running = False
+                    pygame.quit()
+                    exit()
+            if event.type == KEYDOWN:
+                if event.key == K_w:
+                    self.player.vertical = -1
+                elif event.key == K_s:
+                    self.player.vertical = 1
+                if event.key == K_a:
+                    self.player.horizontal = -1
+                elif event.key == K_d:
+                    self.player.horizontal = 1
+            if event.type == KEYUP:
+                if event.key == K_w or event.key == K_s:
+                    self.player.vertical = 0
+                if event.key == K_a or event.key == K_d:
+                    self.player.horizontal = 0
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    if self.soilColision:
+                        self.player.selectedSoil.interact()
+    
+    def updateSprites(self):
+        self.allSprites.update()
 
-#* draw soil grid proportionally to screen size
-soils = drawGrid(int(width/256) * 16, int(width/7), int(height/2.5))
-all_sprites.add(soils)
+    def drawSprites(self):
+        self.screen.blit(BACKGROUND_IMAGE, (0, 0))
+        self.allSprites.draw(self.screen)
+        pygame.display.flip()
 
-#* set Waterfont
-waterfont = Waterfont.Waterfont(int((width/8)*4.4), int(height/4), int(width/256) * 64)
-all_sprites.add(waterfont)
+    def drawGrid(self, cellsize, width, height):
+        soils = list()
+        gap = int(cellsize/16)
+        for i in range(4):
+            for j in range(3):
+                solo = Soil.Soil(width + i * cellsize + gap*i, height + j * cellsize + gap*j, cellsize)
+                soils.append(solo)
+        return soils
 
-clock = pygame.time.Clock()
-
-#! main loop
-while True:
-    clock.tick(60)
-    print(clock.get_fps())
-    screen.blit(bgimg, (0, 0))
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            exit()
-
-    all_sprites.draw(screen)
-    all_sprites.update()
-    pygame.display.update()
+game = FarmGo()
+game.newGame()
 
 
