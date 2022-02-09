@@ -1,9 +1,8 @@
 import pygame
 from pygame.locals import *
 from sys import exit
-from Scripts import Soil
-from Scripts import Waterfont
-
+from scripts import Soil
+from scripts import Waterfont
 pygame.init()
 
 #* draw soil grid on screen

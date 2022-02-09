@@ -7,7 +7,7 @@ class Waterfont(pygame.sprite.Sprite):
         #* load images
         self.sprites = []
         for i in range(1, 10):
-            self.sprites.append(pygame.image.load(f"data/sprites/Scenary/Waterfont/font_{i}.png"))
+            self.sprites.append(pygame.image.load(f"data/sprites/scenary/Waterfont/font_{i}.png"))
         self.spriteIndex = 0
         #* set image
         self.image = self.sprites[self.spriteIndex]
