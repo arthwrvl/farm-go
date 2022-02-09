@@ -8,6 +8,7 @@ class Seed:
         fruit = Fruit.Fruit.random_fruit()
         self.fruit = [fruit.name, fruit.shelf_life, fruit.img]
         self.growing_time = (growing_time + self.fruit[1]) // 2
+        self.price = (self.fruit[1] - self.growing_time) * 10
 
     @classmethod
     def random_growing_time(cls):
@@ -29,4 +30,20 @@ class Seed:
             value = 30
 
         self._growing_time = value
+
+    @property
+    def price(self):
+        return self._price
+
+    @price.setter
+    def price(self, value):
+        if isinstance(value, str):
+            value = float(value.replace("R$", ""))
+
+        if value < 50:
+            value = 50
+        elif value > 200:
+            value = 200
+
+        self._price = value
 
