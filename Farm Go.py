@@ -4,24 +4,26 @@ from sys import exit
 from scripts import Soil
 from scripts import Waterfont
 from scripts import Player
+from scripts import Store
+from scripts import Trash
+
 
 
 pygame.init()
 #region Constants
-WIDTH = int(pygame.display.Info().current_w/2)
-HEIGHT = int(pygame.display.Info().current_h/2)
+WIDTH = int(pygame.display.Info().current_w)
+HEIGHT = int(pygame.display.Info().current_h)
 TITLE = "Farm Go"
 FPS = 60
 
 BACKGROUND_IMAGE = pygame.image.load("data/sprites/scenary/background.png")
 BACKGROUND_IMAGE = pygame.transform.scale(BACKGROUND_IMAGE, (WIDTH, HEIGHT))
-
-PLAYER_WIDTH = int(WIDTH/256) * 16
+SCALE = WIDTH/256
+PLAYER_WIDTH = int(SCALE * 16)
 #endregion
 
 class FarmGo:
     def __init__(self):
-        pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
@@ -29,12 +31,16 @@ class FarmGo:
     
     def newGame(self):
         self.allSprites = pygame.sprite.Group()
-        self.soils = self.drawGrid(int(WIDTH/256) * 16, int(WIDTH/7), int(HEIGHT/2.5))
+        self.soils = self.drawGrid(int(SCALE * 16), int(WIDTH/7), int(HEIGHT/2.5))
         self.allSprites.add(self.soils)
-        self.waterfont = Waterfont.Waterfont(int((WIDTH/8)*4.4), int(HEIGHT/4), int(WIDTH/256) * 64)
+        self.waterfont = Waterfont.Waterfont(int((WIDTH/8)*4.4), int(HEIGHT/4), int(SCALE * 64))
         self.allSprites.add(self.waterfont)
         self.player = Player.Player(int((WIDTH/2) - (PLAYER_WIDTH/2)), int((HEIGHT/2) - (PLAYER_WIDTH*1.5/2)), PLAYER_WIDTH, PLAYER_WIDTH/10)
         self.allSprites.add(self.player)
+        self.store = Store.Store(int(WIDTH/2.185), 0, int(SCALE * 128))
+        self.allSprites.add(self.store)
+        self.trash = Trash.Trash(int(WIDTH/2), int(2*SCALE), int(SCALE * 32))
+        self.allSprites.add(self.trash)
         self.run()
     
     def run(self):

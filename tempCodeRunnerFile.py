@@ -1,2 +1,1 @@
-
-            self.updateSprites()
+ int(1*SCALE)
