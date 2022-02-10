@@ -47,7 +47,7 @@ class Seed:
     @price.setter
     def price(self, value):
         if isinstance(value, str):
-            value = float(value.replace("R$", ""))
+            value = int(value.replace("R$", ""))
 
         if value < 50:
             value = 50
