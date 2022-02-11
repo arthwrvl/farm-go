@@ -36,7 +36,7 @@ class Soil(pygame.sprite.Sprite):
         elif self.state == 1:
             self.image = self.prepared[0]
             self.lastImage = self.prepared[0]
-            self.select()
+            self.Select()
         elif self.state == 2:
             print("planted")
             #add seed sprite

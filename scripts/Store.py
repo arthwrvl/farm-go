@@ -10,8 +10,9 @@ class Store(pygame.sprite.Sprite):
 
         #* set rect
         self.pos = pos
-        
+
         
         self.size = size
-        self.image = pygame.transform.scale(self.image, (self.size, self.size))
-        self.rect = self.image.get_rect(topright = pos)
+        self.image = pygame.transform.scale(self.image, self.size)
+        self.rect = self.image.get_rect(topleft = pos)
+        self.hitbox = pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1]/10*8)

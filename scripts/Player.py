@@ -6,7 +6,7 @@ from pygame.locals import *
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, size, speed, obstacles):
+    def __init__(self, x, y, size, speed, obstacles, soils):
         pygame.sprite.Sprite.__init__(self)
         #* load images
         self.sprites = []
@@ -15,6 +15,8 @@ class Player(pygame.sprite.Sprite):
         self.obstacles = obstacles
         self.x = x
         self.y = y
+
+        self.soils = soils
 
 
         #* set movement
@@ -28,8 +30,10 @@ class Player(pygame.sprite.Sprite):
 
         self.size = size
         self.image = pygame.transform.scale(self.image, (self.size, int(self.size * 1.5)))
-        self.hitbox = pygame.Rect(self.rect.x, self.rect.y, self.size, int(self.size * 1.5))
-    
+        self.hitbox = pygame.Rect(self.rect.x, self.rect.y, int(self.size/3*2), self.size/5*3)
+        self.hitbox_soil = pygame.Rect(self.rect.x, self.rect.y, int(self.size/3*2)/2, self.size/5*3/2)
+        self.SyncHitbox()
+
     def input(self):
         keys = pygame.key.get_pressed()
 
@@ -49,12 +53,38 @@ class Player(pygame.sprite.Sprite):
     def move(self):
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()
+            print(self.direction)
+            self.hitbox.x += self.direction.x * self.speed
+            self.collision('horizontal')
+            self.hitbox.y += self.direction.y * self.speed
+            self.collision('vertical')
+            self.SyncHitbox()
+            self.CheckSoilCollision()
 
-        print(self.direction)
-        self.rect.x += self.direction.x * self.speed
-        self.collision('horizontal')
-        self.rect.y += self.direction.y * self.speed
-        self.collision('vertical')
+    def SyncHitbox(self):
+        self.rect.centerx = self.hitbox.centerx
+        self.rect.topleft = self.hitbox.topleft + pygame.Vector2(-self.size/6, -self.size/6*5.2)
+        self.hitbox_soil.center = self.hitbox.center + pygame.Vector2(0, self.size/10)
+    def CheckSoilCollision(self):
+        for sprite in self.soils:
+            if sprite.hitbox.colliderect(self.hitbox_soil):
+                print("Colision")
+                print(self.selectedSoil)
+                if self.selectedSoil != {}:
+                    if self.selectedSoil != sprite:
+                        self.selectedSoil.Deselect()
+                        self.selectedSoil = sprite
+                        self.selectedSoil.Select()
+                        break
+                else:
+                    self.selectedSoil = sprite
+                    self.selectedSoil.Select()    
+                    break      
+            else:
+                if self.selectedSoil != {}:
+                    self.selectedSoil.Deselect()
+                    self.selectedSoil = {}
+
 
     def collision(self, direction):
         if direction == 'horizontal':

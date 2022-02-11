@@ -24,7 +24,7 @@ PLAYER_WIDTH = int(SCALE * 16)
 class FarmGo:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SRCALPHA)
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
         self.running = True
@@ -39,8 +39,9 @@ class FarmGo:
 
         #* Draw Level
         self.soils = self.drawGrid(int(SCALE * 16), int(WIDTH/7), int(HEIGHT/2.5))
+        self.soilsSprite.add(self.soils)
         self.waterfont = Waterfont.Waterfont((int((WIDTH/8)*4.4), int(HEIGHT/4)), int(SCALE * 64), [self.allSprites, self.collideSprites])
-        #self.store = Store.Store((int(WIDTH/2.185), 0), int(SCALE * 128), [self.allSprites, self.collideSprites])
+        self.store = Store.Store((14*SCALE, 0), (int(SCALE * 76), int(53*SCALE)), [self.allSprites, self.collideSprites])
         
         self.trash = Trash.Trash((int(WIDTH/2), int(2*SCALE)), int(SCALE * 32), [self.allSprites, self.collideSprites])
         
@@ -49,10 +50,9 @@ class FarmGo:
         self.fence_bottom = Fence.Fence((int(15*SCALE), int((HEIGHT - 21.5*SCALE))), [self.collideSprites, self.allSprites], (int(SCALE*128), int(22*SCALE)), "bottom")
 
         #* Draw Player
-        self.player = Player.Player(int((WIDTH/2) - (PLAYER_WIDTH/2)), int((HEIGHT/2) - (PLAYER_WIDTH*1.5/2)), PLAYER_WIDTH, PLAYER_WIDTH/10, self.collideSprites)
+        self.player = Player.Player(int((WIDTH/2) - (PLAYER_WIDTH/2)), int((HEIGHT/2) - (PLAYER_WIDTH*1.5/2)), PLAYER_WIDTH, PLAYER_WIDTH/10, self.collideSprites, self.soils)
 
         self.allSprites.add(self.player)
-        self.soilsSprite.add(self.soils)
 
         #self.soilsSprite.add(self.player)
         self.run()
@@ -64,24 +64,8 @@ class FarmGo:
             self.updateSprites()
             self.drawSprites()
 
-    def checkSoilColision(self):
-        for sprite in self.soils:
-            if sprite.hitbox.colliderect(self.player.rect):
-                if self.player.selectedSoil != {}:
-                    if self.player.selectedSoil != sprite:
-                        self.player.selectedSoil.Deselect()
-                        self.player.selectedSoil = sprite
-                        self.player.selectedSoil.Select()
-                else:
-                    self.player.selectedSoil = sprite
-                    self.player.selectedSoil.Select()          
-            else:
-                if self.player.selectedSoil != {}:
-                    self.player.selectedSoil.Deselect()
-                    self.player.selectedSoil = {}
 
     def events(self):
-        self.checkSoilColision()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 if self.running:
@@ -120,10 +104,9 @@ class FarmGo:
         self.soilsSprite.draw(self.screen)
         #self.allSprites.draw(self.screen)
         self.allSprites.Custom_draw()
-        for sprite in self.soilsSprite:
-            pygame.draw.rect(self.screen, (255, 255, 255), sprite.hitbox)
-
-        pygame.draw.rect(self.screen, (255, 0, 0), self.player.hitbox)
+        pygame.draw.rect(self.screen, (255, 0, 0), self.store.hitbox)
+        pygame.draw.rect(self.screen, (0, 255, 0), self.player.hitbox)
+        pygame.draw.rect(self.screen, (255, 0, 0), self.player.hitbox_soil)
         pygame.display.flip()
 
     def drawGrid(self, cellsize, width, height):
