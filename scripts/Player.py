@@ -1,118 +1,85 @@
 from email.mime import image
 import imp
+from msilib.schema import Directory
 import pygame
 from pygame.locals import *
 
-pygame.init()
-WIDTH = int(pygame.display.Info().current_w)
-HEIGHT = int(pygame.display.Info().current_h)
-SCALE = WIDTH/256
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, size, speed):
+    def __init__(self, x, y, size, speed, obstacles):
         pygame.sprite.Sprite.__init__(self)
         #* load images
         self.sprites = []
         self.sprites.append(pygame.image.load("data/sprites/player/player_placeholder.png"))
         self.image = self.sprites[0]
-        
+        self.obstacles = obstacles
         self.x = x
         self.y = y
 
+
         #* set movement
-        self.vertical = 0
-        self.horizontal = 0
+        self.direction = pygame.math.Vector2(0, 0)
+        #self.vertical = 0
+        #self.horizontal = 0
         self.speed = speed
         self.selectedSoil = {}
-
         self.rect = self.image.get_rect()
         self.rect.topleft = self.x, self.y
 
         self.size = size
         self.image = pygame.transform.scale(self.image, (self.size, int(self.size * 1.5)))
+        self.hitbox = pygame.Rect(self.rect.x, self.rect.y, self.size, int(self.size * 1.5))
+    
+    def input(self):
+        keys = pygame.key.get_pressed()
 
-    def collision(self):
-        self.rect_player = pygame.draw.rect(screen, (0, 0, 0), (self.x, self.y, self.image.get_width(), self.image.get_height()))
-        self.rect_waterfont = pygame.draw.rect(screen, (0, 0, 0), (WIDTH * 0.59, HEIGHT * 0.30, SCALE * 40, SCALE * 38))
-        self.rect_trash = pygame.draw.rect(screen, (0, 0, 0), (WIDTH * 0.35, HEIGHT * 0.15, SCALE * 35, SCALE * 6))
+        if keys[K_RIGHT]:
+            self.direction.x = 1
+        elif keys[K_LEFT]:
+            self.direction.x = -1
+        else:
+            self.direction.x = 0
+        if keys[K_UP]:
+            self.direction.y = -1
+        elif keys[K_DOWN]:
+            self.direction.y = 1
+        else:
+            self.direction.y = 0
+    
+    def move(self):
+        if self.direction.magnitude() != 0:
+            self.direction = self.direction.normalize()
 
-        # waterfont
-        if (self.rect_player.colliderect(self.rect_waterfont) or self.rect_player.colliderect(self.rect_trash)) and self.horizontal == 1:
-            self.horizontal = 0
-            self.x -= 20
-        elif (self.rect_player.colliderect(self.rect_waterfont) or self.rect_player.colliderect(self.rect_trash)) and self.horizontal == -1:
-            self.horizontal = 0
-            self.x += 20
-        elif (self.rect_player.colliderect(self.rect_waterfont) or self.rect_player.colliderect(self.rect_trash)) and self.vertical == 1:
-            self.vertical = 0
-            self.y -= 20
-        elif (self.rect_player.colliderect(self.rect_waterfont) or self.rect_player.colliderect(self.rect_trash)) and self.vertical == -1:
-            self.vertical = 0
-            self.y += 20
+        print(self.direction)
+        self.rect.x += self.direction.x * self.speed
+        self.collision('horizontal')
+        self.rect.y += self.direction.y * self.speed
+        self.collision('vertical')
 
-        # trash
-        if self.rect_player.colliderect(self.rect_trash) and self.horizontal == 1:
-            self.horizontal = 0
-            self.x -= 10
-        elif self.rect_player.colliderect(self.rect_trash) and self.horizontal == -1:
-            self.horizontal = 0
-            self.x += 10
-        elif self.rect_player.colliderect(self.rect_trash) and self.vertical == 1:
-            self.vertical = 0
-            self.y -= 10
-        elif self.rect_player.colliderect(self.rect_trash) and self.vertical == -1:
-            self.vertical = 0
-            self.y += 10
+    def collision(self, direction):
+        if direction == 'horizontal':
+            for sprite in self.obstacles:
+                if sprite.rect.colliderect(self.rect):
+                    if self.direction.x > 0:
+                        print("colision right")
+                        self.rect.right = sprite.rect.left
+                    if self.direction.x < 0:
+                        self.rect.left = sprite.rect.right
+                        print("colision left")
+        
+        if direction == 'vertical':
+            for sprite in self.obstacles:
+                if sprite.rect.colliderect(self.rect):
+                    if self.direction.y > 0:
+                        self.rect.bottom = sprite.rect.top
+                        print("colision down")
+                    if self.direction.y < 0:
+                        self.rect.top = sprite.rect.bottom
+                        print("colision up")
 
-        # right
-        if self.x >= WIDTH * 0.82:
-            if self.horizontal == 1: 
-                self.horizontal = 0
-        # down
-        if self.y >= HEIGHT * 0.68:
-            if self.vertical == 1: 
-                self.vertical = 0
-        # left
-        if self.x <= WIDTH * 0.08:
-            if self.horizontal == -1: 
-                self.horizontal = 0
-        # up
-        if self.y <= HEIGHT * 0.06:
-            if self.vertical == -1: 
-                self.vertical = 0
 
-        return self.horizontal, self.vertical
+    
 
     def update(self):
-        self.horizontal, self.vertical = self.collision()
-
-        #* filter diagonal movement
-        if self.horizontal != 0 and self.vertical != 0:
-            if self.vertical > 0:
-                self.vertical = 0.7
-            else:
-                self.vertical = -0.7
-            if self.horizontal > 0:
-                self.horizontal = 0.7
-            else:
-                self.horizontal = -0.7
-        else:
-            if self.vertical > 0 and self.vertical < 1:
-                self.vertical = 1
-            elif self.vertical < 0 and self.vertical > -1:
-                self.vertical = -1
-            if self.horizontal > 0 and self.horizontal < 1:
-                self.horizontal = 1
-            elif self.horizontal < 0 and self.horizontal > -1:
-                self.horizontal = -1
-
-
-
-        self.rect = self.image.get_rect()
-        #* move
-        self.x += self.horizontal * self.speed
-        self.y += self.vertical * self.speed
-
-        self.rect.topleft = self.x, self.y
-        self.image = pygame.transform.scale(self.image, (self.size, int(self.size * 1.5)))
+        self.input()
+        self.move()

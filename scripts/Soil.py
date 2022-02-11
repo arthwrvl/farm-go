@@ -3,7 +3,7 @@ from pygame.locals import *
 
 
 class Soil(pygame.sprite.Sprite):
-    def __init__(self, x, y, size):
+    def __init__(self, pos, size):
         pygame.sprite.Sprite.__init__(self)
 
         self.selected = False
@@ -21,16 +21,14 @@ class Soil(pygame.sprite.Sprite):
         self.image = self.dry[0]
         self.lastImage = self.image
 
-        #*set rect
-        self.x = x
-        self.y = y
-
-        self.rect = self.image.get_rect()
-        self.rect.topleft = self.x, self.y
+        self.pos = pos
+        
 
         #*set size
         self.size = size
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        self.rect = self.image.get_rect(topleft = self.pos)
+        self.hitbox = pygame.Rect(self.pos[0], self.pos[1], self.size, self.size)
 
     def ChangeState(self):
         if self.state == 0:
@@ -45,8 +43,9 @@ class Soil(pygame.sprite.Sprite):
         elif self.state == 3:
             print("need water")
             #add water sprite
+        self.Redraw()
 
-    def interact(self):
+    def Interact(self):
         if self.state == 0:
             self.state = 1
         elif self.state == 1:
@@ -54,22 +53,24 @@ class Soil(pygame.sprite.Sprite):
         elif self.state == 3:
             self.state = 2
         self.ChangeState()
-    def select(self):
+
+    def Select(self):
         if self.selected == False:
             self.lastImage = self.image.copy()
             color = pygame.Surface(self.image.get_size()).convert_alpha()
             color.fill(pygame.Color("#FFFFFFAA"))
             self.image.blit(color, (0, 0), special_flags=BLEND_RGBA_MULT)
             self.selected = True
-    def deselect(self):
+
+    def Deselect(self):
         if self.selected == True:
             self.image = self.lastImage
             self.image = pygame.transform.scale(self.image, (self.size, self.size))
             self.selected = False
-    def update(self):
-        self.rect = self.image.get_rect()
-        self.rect.topleft = self.x, self.y
+
+    def Redraw(self):
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        self.rect = self.image.get_rect(topleft = self.pos)
     
 
         

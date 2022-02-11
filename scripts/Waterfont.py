@@ -2,8 +2,8 @@ import pygame
 from pygame.locals import *
 
 class Waterfont(pygame.sprite.Sprite):
-    def __init__(self, x, y, size):
-        pygame.sprite.Sprite.__init__(self)
+    def __init__(self, pos, size, groups):
+        pygame.sprite.Sprite.__init__(self, groups)
         #* load images
         self.sprites = []
         for i in range(1, 10):
@@ -13,11 +13,9 @@ class Waterfont(pygame.sprite.Sprite):
         self.image = self.sprites[self.spriteIndex]
 
         #* set rect
-        self.x = x
-        self.y = y
-        self.rect = self.image.get_rect()
-        self.rect.topleft = self.x, self.y
-
+        self.pos = pos
+        self.rect = self.image.get_rect(topleft = pos)
+        
         #* set size
         self.size = size
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
@@ -28,6 +26,5 @@ class Waterfont(pygame.sprite.Sprite):
             self.spriteIndex = 0
         self.image = self.sprites[int(self.spriteIndex)]
 
-        self.rect = self.image.get_rect()
-        self.rect.topleft = self.x, self.y
+        self.rect = self.image.get_rect(topleft = self.pos)
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
