@@ -11,8 +11,8 @@ from scripts import Trash
 
 pygame.init()
 #region Constants
-WIDTH = int(pygame.display.Info().current_w)
-HEIGHT = int(pygame.display.Info().current_h)
+WIDTH = int(pygame.display.Info().current_w/2)
+HEIGHT = int(pygame.display.Info().current_h/2)
 TITLE = "Farm Go"
 FPS = 60
 

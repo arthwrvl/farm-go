@@ -4,10 +4,9 @@ import pygame
 from pygame.locals import *
 
 pygame.init()
-WIDTH = int(pygame.display.Info().current_w)
-HEIGHT = int(pygame.display.Info().current_h)
+WIDTH = int(pygame.display.Info().current_w/2)
+HEIGHT = int(pygame.display.Info().current_h/2)
 SCALE = WIDTH/256
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, size, speed):
@@ -31,55 +30,56 @@ class Player(pygame.sprite.Sprite):
 
         self.size = size
         self.image = pygame.transform.scale(self.image, (self.size, int(self.size * 1.5)))
+        self.screen = pygame.display.get_surface()
 
     def collision(self):
-        self.rect_player = pygame.draw.rect(screen, (0, 0, 0), (self.x, self.y, self.image.get_width(), self.image.get_height()))
-        self.rect_waterfont = pygame.draw.rect(screen, (0, 0, 0), (WIDTH * 0.59, HEIGHT * 0.30, SCALE * 40, SCALE * 38))
-        self.rect_trash = pygame.draw.rect(screen, (0, 0, 0), (WIDTH * 0.35, HEIGHT * 0.15, SCALE * 35, SCALE * 6))
+        self.rect_player = pygame.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.image.get_width(), self.image.get_height()))
+        self.rect_waterfont = pygame.draw.rect(self.screen, (0, 0, 0), (WIDTH * 0.59, HEIGHT * 0.30, SCALE * 40, SCALE * 38))
+        self.rect_trash = pygame.draw.rect(self.screen, (0, 0, 0), (WIDTH * 0.35, HEIGHT * 0.15, SCALE * 35, SCALE * 6))
 
         # waterfont
-        if (self.rect_player.colliderect(self.rect_waterfont) or self.rect_player.colliderect(self.rect_trash)) and self.horizontal == 1:
+        if (self.rect_player.colliderect(self.rect_waterfont) or self.rect_player.colliderect(self.rect_trash)) and self.horizontal > 0:
             self.horizontal = 0
-            self.x -= 20
-        elif (self.rect_player.colliderect(self.rect_waterfont) or self.rect_player.colliderect(self.rect_trash)) and self.horizontal == -1:
+            self.x -= 5
+        elif (self.rect_player.colliderect(self.rect_waterfont) or self.rect_player.colliderect(self.rect_trash)) and self.horizontal < 0:
             self.horizontal = 0
-            self.x += 20
-        elif (self.rect_player.colliderect(self.rect_waterfont) or self.rect_player.colliderect(self.rect_trash)) and self.vertical == 1:
+            self.x += 5
+        elif (self.rect_player.colliderect(self.rect_waterfont) or self.rect_player.colliderect(self.rect_trash)) and self.vertical > 0:
             self.vertical = 0
-            self.y -= 20
-        elif (self.rect_player.colliderect(self.rect_waterfont) or self.rect_player.colliderect(self.rect_trash)) and self.vertical == -1:
+            self.y -= 5
+        elif (self.rect_player.colliderect(self.rect_waterfont) or self.rect_player.colliderect(self.rect_trash)) and self.vertical < 0:
             self.vertical = 0
-            self.y += 20
+            self.y += 5
 
         # trash
-        if self.rect_player.colliderect(self.rect_trash) and self.horizontal == 1:
+        if self.rect_player.colliderect(self.rect_trash) and self.horizontal > 0:
             self.horizontal = 0
-            self.x -= 10
-        elif self.rect_player.colliderect(self.rect_trash) and self.horizontal == -1:
+            self.x -= 5
+        elif self.rect_player.colliderect(self.rect_trash) and self.horizontal < 0:
             self.horizontal = 0
-            self.x += 10
-        elif self.rect_player.colliderect(self.rect_trash) and self.vertical == 1:
+            self.x += 5
+        elif self.rect_player.colliderect(self.rect_trash) and self.vertical > 0:
             self.vertical = 0
-            self.y -= 10
-        elif self.rect_player.colliderect(self.rect_trash) and self.vertical == -1:
+            self.y -= 5
+        elif self.rect_player.colliderect(self.rect_trash) and self.vertical < 0:
             self.vertical = 0
-            self.y += 10
+            self.y += 5
 
         # right
         if self.x >= WIDTH * 0.82:
-            if self.horizontal == 1: 
+            if self.horizontal > 0: 
                 self.horizontal = 0
         # down
         if self.y >= HEIGHT * 0.68:
-            if self.vertical == 1: 
+            if self.vertical > 0: 
                 self.vertical = 0
         # left
         if self.x <= WIDTH * 0.08:
-            if self.horizontal == -1: 
+            if self.horizontal < 0: 
                 self.horizontal = 0
         # up
         if self.y <= HEIGHT * 0.06:
-            if self.vertical == -1: 
+            if self.vertical < 0: 
                 self.vertical = 0
 
         return self.horizontal, self.vertical
