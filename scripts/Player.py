@@ -77,9 +77,6 @@ class Player(pygame.sprite.Sprite):
                         self.rect.top = sprite.rect.bottom
                         print("colision up")
 
-
-    
-
     def update(self):
         self.input()
         self.move()
