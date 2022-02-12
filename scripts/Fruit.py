@@ -1,6 +1,7 @@
 import pygame
 from random import randint
 from pygame.locals import *
+from scripts.constants import *
 
 
 class Fruit:
@@ -35,6 +36,7 @@ class Fruit:
         return cls(name, shelf_life, img)
 
     def show_img(self, screen, x, y):
+        self.img = pygame.transform.scale(self.img, (int(SCALE * 14), int(SCALE * 14)))
         screen.blit(self.img, (x, y)) 
 
     @property

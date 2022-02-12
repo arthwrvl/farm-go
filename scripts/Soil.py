@@ -1,4 +1,5 @@
 import pygame
+from scripts import Seed
 from pygame.locals import *
 
 
@@ -15,7 +16,7 @@ class Soil(pygame.sprite.Sprite):
             self.prepared.append(pygame.image.load(f"data/sprites/scenary/Soil/prepared/{i}.png"))
 
         #*set state
-        self.state = 0 # 0 = dry, 1 = prepared, 2 = planted, 3 = need water
+        self.state = 0 # 0 = dry, 1 = prepared, 2 = planted, 3 = need water, 4 = choosing seed
 
         #*set image
         self.image = self.dry[0]
@@ -29,7 +30,23 @@ class Soil(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.rect = self.image.get_rect(topleft = self.pos)
         self.hitbox = pygame.Rect(self.pos[0], self.pos[1], self.size, self.size)
+    
+    def AddSeed(self):
+        self.seed = Seed.Seed.random_growing_time()
+        print(self.seed.fruit[0])
+        self.seed.show_img(self.image, self.size/3, self.size/3)
+        self.state = 4
+        self.selected = False
 
+    def ChangeSeed(self):
+        if self.state == 4 or self.state == 2:
+            self.AddSeed()
+            
+    def SaveSeed(self):
+        if self.state == 4:
+            self.seed.show_img_fruit(self.image, self.size/9, self.size/9)
+            self.selected = False
+   
     def ChangeState(self):
         if self.state == 0:
             self.image = self.dry[0]
@@ -39,6 +56,7 @@ class Soil(pygame.sprite.Sprite):
             self.Select()
         elif self.state == 2:
             print("planted")
+            self.AddSeed()
             #add seed sprite
         elif self.state == 3:
             print("need water")
@@ -57,9 +75,10 @@ class Soil(pygame.sprite.Sprite):
     def Select(self):
         if self.selected == False:
             self.lastImage = self.image.copy()
-            color = pygame.Surface(self.image.get_size()).convert_alpha()
-            color.fill(pygame.Color("#FFFFFFAA"))
-            self.image.blit(color, (0, 0), special_flags=BLEND_RGBA_MULT)
+            if self.state != 4:
+                self.color = pygame.Surface(self.image.get_size()).convert_alpha()
+                self.color.fill(pygame.Color("#FFFFFFAA"))
+                self.image.blit(self.color, (0, 0), special_flags=BLEND_RGBA_MULT)
             self.selected = True
 
     def Deselect(self):

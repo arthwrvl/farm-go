@@ -1,3 +1,4 @@
+#from asyncio import constants
 import pygame
 from pygame.locals import *
 from sys import exit
@@ -7,21 +8,14 @@ from scripts import Player
 from scripts import Store
 from scripts import Trash
 from scripts import Fence
-
+from scripts.constants import *
 
 pygame.init()
-#region Constants
-WIDTH = int(pygame.display.Info().current_w/2)
-HEIGHT = int(pygame.display.Info().current_h/2)
-TITLE = "Farm Go"
-FPS = 60
-BACKGROUND_IMAGE = pygame.image.load("data/sprites/scenary/background.png")
-BACKGROUND_IMAGE = pygame.transform.scale(BACKGROUND_IMAGE, (WIDTH, HEIGHT))
-SCALE = WIDTH/256
-PLAYER_WIDTH = int(SCALE * 16)
-#endregion
+
 
 class FarmGo:
+    BUTTON_PRESS_TIME = 0
+
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SRCALPHA)
@@ -51,7 +45,6 @@ class FarmGo:
 
         #* Draw Player
         self.player = Player.Player(int((WIDTH/2) - (PLAYER_WIDTH/2)), int((HEIGHT/2) - (PLAYER_WIDTH*1.5/2)), PLAYER_WIDTH, PLAYER_WIDTH/10, self.collideSprites, self.soils)
-
         self.allSprites.add(self.player)
 
         #self.soilsSprite.add(self.player)
@@ -66,6 +59,7 @@ class FarmGo:
 
 
     def events(self):
+        self.current_time = pygame.time.get_ticks() // 1000
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 if self.running:
@@ -93,6 +87,18 @@ class FarmGo:
                 if event.button == 1:
                     if self.player.selectedSoil != {}:
                         self.player.selectedSoil.Interact()
+                if event.button == 2:
+                    self.BUTTON_PRESS_TIME = pygame.time.get_ticks() // 1000
+                    self.SEED_TIME = self.player.selectedSoil.seed.growing_time
+                if event.button == 3:
+                    if self.player.selectedSoil != {}:
+                        self.player.selectedSoil.ChangeSeed()
+        
+        if self.BUTTON_PRESS_TIME != 0:
+            if self.current_time - self.BUTTON_PRESS_TIME >= self.SEED_TIME:
+                if self.player.selectedSoil != {}:
+                    self.player.selectedSoil.SaveSeed()         
+                self.BUTTON_PRESS_TIME = 0  
     
     def updateSprites(self):
         self.allSprites.update()
@@ -104,9 +110,9 @@ class FarmGo:
         self.soilsSprite.draw(self.screen)
         #self.allSprites.draw(self.screen)
         self.allSprites.Custom_draw()
-        pygame.draw.rect(self.screen, (255, 0, 0), self.store.hitbox)
-        pygame.draw.rect(self.screen, (0, 255, 0), self.player.hitbox)
-        pygame.draw.rect(self.screen, (255, 0, 0), self.player.hitbox_soil)
+        #pygame.draw.rect(self.screen, (255, 0, 0), self.store.hitbox)
+        #pygame.draw.rect(self.screen, (0, 255, 0), self.player.hitbox)
+        #pygame.draw.rect(self.screen, (255, 0, 0), self.player.hitbox_soil)
         pygame.display.flip()
 
     def drawGrid(self, cellsize, width, height):
