@@ -1,6 +1,8 @@
 import pygame
 from pygame.locals import *
 
+#TODO: fill water can on interact
+
 class Waterfont(pygame.sprite.Sprite):
     def __init__(self, pos, size, groups):
         pygame.sprite.Sprite.__init__(self, groups)
@@ -16,9 +18,13 @@ class Waterfont(pygame.sprite.Sprite):
         self.pos = pos
         self.rect = self.image.get_rect(topleft = pos)
         
+        
         #* set size
         self.size = size
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        self.hitbox = pygame.Rect(self.pos[0], self.pos[1], self.size/10*9, self.size/5*3)
+        self.hitbox.topleft += pygame.Vector2(self.size*0.1, self.size/5)
+        self.hitbox_interact = pygame.Rect(self.pos[0] - self.size*0.1, self.pos[1] - self.size*0.1, self.size*1.1, self.size*1.1)
     
     def update(self):
         self.spriteIndex += 0.1
@@ -28,3 +34,6 @@ class Waterfont(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(topleft = self.pos)
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        
+    def Interact(self):
+        print("Interact with waterfont")

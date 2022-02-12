@@ -13,6 +13,9 @@ from scripts.constants import *
 pygame.init()
 
 
+#TODO: create the UI
+
+
 class FarmGo:
     BUTTON_PRESS_TIME = 0
 
@@ -34,14 +37,14 @@ class FarmGo:
         #* Draw Level
         self.soils = self.drawGrid(int(SCALE * 16), int(WIDTH/7), int(HEIGHT/2.5))
         self.soilsSprite.add(self.soils)
-        self.waterfont = Waterfont.Waterfont((int((WIDTH/8)*4.4), int(HEIGHT/4)), int(SCALE * 64), [self.allSprites, self.collideSprites])
-        self.store = Store.Store((14*SCALE, 0), (int(SCALE * 76), int(53*SCALE)), [self.allSprites, self.collideSprites])
+        self.waterfont = Waterfont.Waterfont((int((WIDTH/8)*4.6), int(HEIGHT/4)), int(SCALE * 50), [self.allSprites, self.collideSprites])
+        self.store = Store.Store((14*SCALE, 0), (int(SCALE * 76), int(53*SCALE)), [self.allSprites, self.collideSprites], self.screen)
         
         self.trash = Trash.Trash((int(WIDTH/2), int(2*SCALE)), int(SCALE * 32), [self.allSprites, self.collideSprites])
         
-        self.fence_right = Fence.Fence((int(WIDTH - 33*SCALE), int(44*SCALE)), [self.collideSprites, self.allSprites], (int(SCALE*8), int(91*SCALE)), "side")
-        self.fence_left = Fence.Fence((int(15*SCALE), int(44*SCALE)), [self.collideSprites, self.allSprites], (int(SCALE*8), int(91*SCALE)), "side_2")
-        self.fence_bottom = Fence.Fence((int(15*SCALE), int((HEIGHT - 21.5*SCALE))), [self.collideSprites, self.allSprites], (int(SCALE*128), int(22*SCALE)), "bottom")
+        self.fence_right = Fence.Fence((int(WIDTH - 33*SCALE), int(44*SCALE)), [self.collideSprites, self.allSprites], (int(SCALE*8), int(91*SCALE)), "side", (int(SCALE*8), int(70*SCALE)), (0, 10*SCALE))
+        self.fence_left = Fence.Fence((int(15*SCALE), int(44*SCALE)), [self.collideSprites, self.allSprites], (int(SCALE*8), int(91*SCALE)), "side_2", (int(SCALE*8), int(85*SCALE)), (0,0))
+        self.fence_bottom = Fence.Fence((int(15*SCALE), int((HEIGHT - 21.5*SCALE))), [self.collideSprites, self.allSprites], (int(SCALE*128), int(22*SCALE)), "bottom", (int(SCALE*128), int(11*SCALE)), (0,11*SCALE))
 
         #* Draw Player
         self.player = Player.Player(int((WIDTH/2) - (PLAYER_WIDTH/2)), int((HEIGHT/2) - (PLAYER_WIDTH*1.5/2)), PLAYER_WIDTH, PLAYER_WIDTH/10, self.collideSprites, self.soils)
@@ -87,9 +90,12 @@ class FarmGo:
                 if event.button == 1:
                     if self.player.selectedSoil != {}:
                         self.player.selectedSoil.Interact()
+                    if self.player.select != {}:
+                        self.player.select.Interact()
                 if event.button == 2:
                     self.BUTTON_PRESS_TIME = pygame.time.get_ticks() // 1000
                     self.SEED_TIME = self.player.selectedSoil.seed.growing_time
+                    print(self.SEED_TIME)
                 if event.button == 3:
                     if self.player.selectedSoil != {}:
                         self.player.selectedSoil.ChangeSeed()
@@ -110,7 +116,12 @@ class FarmGo:
         self.soilsSprite.draw(self.screen)
         #self.allSprites.draw(self.screen)
         self.allSprites.Custom_draw()
-        #pygame.draw.rect(self.screen, (255, 0, 0), self.store.hitbox)
+
+        if self.store.open == True:
+            self.store.DrawStore(self.screen)
+        #pygame.draw.rect(self.screen, (255, 0, 0), self.waterfont.hitbox_interact)
+        #pygame.draw.rect(self.screen, (255, 0, 0), self.fence_bottom.hitbox)
+        #pygame.draw.rect(self.screen, (255, 0, 0), self.fence_right.hitbox)
         #pygame.draw.rect(self.screen, (0, 255, 0), self.player.hitbox)
         #pygame.draw.rect(self.screen, (255, 0, 0), self.player.hitbox_soil)
         pygame.display.flip()
@@ -123,6 +134,7 @@ class FarmGo:
                 solo = Soil.Soil((width + i * cellsize + gap*i, height + j * cellsize + gap*j), cellsize)
                 soils.append(solo)
         return soils
+    
 
 
 class YsortGroup(pygame.sprite.Group):

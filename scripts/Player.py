@@ -1,8 +1,9 @@
-from email.mime import image
-import imp
-from msilib.schema import Directory
 import pygame
 from pygame.locals import *
+
+#TODO: add a function to check if the player is inside the hitbox_interact (DONE)
+#TODO: create a simple inventory system
+#TODO: make the player collect the hortifrutti
 
 
 class Player(pygame.sprite.Sprite):
@@ -27,6 +28,7 @@ class Player(pygame.sprite.Sprite):
         self.selectedSoil = {}
         self.rect = self.image.get_rect()
         self.rect.topleft = self.x, self.y
+        self.select = {}
 
         self.size = size
         self.image = pygame.transform.scale(self.image, (self.size, int(self.size * 1.5)))
@@ -60,6 +62,7 @@ class Player(pygame.sprite.Sprite):
             self.collision('vertical')
             self.SyncHitbox()
             self.CheckSoilCollision()
+            self.Trigger()
 
     def SyncHitbox(self):
         self.rect.centerx = self.hitbox.centerx
@@ -85,26 +88,36 @@ class Player(pygame.sprite.Sprite):
                     self.selectedSoil.Deselect()
                     self.selectedSoil = {}
 
+    def Trigger(self):
+        for sprite in self.obstacles:
+            if sprite.hitbox_interact.colliderect(self.hitbox):
+                print(self.select)
+                self.select = sprite
+                break
+            else:
+                if self.select != {}:
+                    self.select = {}
+
 
     def collision(self, direction):
         if direction == 'horizontal':
             for sprite in self.obstacles:
-                if sprite.rect.colliderect(self.rect):
+                if sprite.hitbox.colliderect(self.hitbox):
                     if self.direction.x > 0:
                         print("colision right")
-                        self.rect.right = sprite.rect.left
+                        self.hitbox.right = sprite.hitbox.left
                     if self.direction.x < 0:
-                        self.rect.left = sprite.rect.right
+                        self.hitbox.left = sprite.hitbox.right
                         print("colision left")
         
         if direction == 'vertical':
             for sprite in self.obstacles:
-                if sprite.rect.colliderect(self.rect):
+                if sprite.hitbox.colliderect(self.hitbox):
                     if self.direction.y > 0:
-                        self.rect.bottom = sprite.rect.top
+                        self.hitbox.bottom = sprite.hitbox.top
                         print("colision down")
                     if self.direction.y < 0:
-                        self.rect.top = sprite.rect.bottom
+                        self.hitbox.top = sprite.hitbox.bottom
                         print("colision up")
 
     def update(self):
