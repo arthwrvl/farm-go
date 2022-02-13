@@ -89,6 +89,9 @@ class FarmGo:
                     self.player.horizontal = 0
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
+                    if self.store.open == True:
+                        self.store.open = not self.store.close_button.Interact()
+                        print(self.store.open)
                     if self.player.selectedSoil != {}:
                         self.player.selectedSoil.Interact()
                     if self.player.select != {}:
@@ -118,6 +121,7 @@ class FarmGo:
         #self.allSprites.draw(self.screen)
         self.allSprites.Custom_draw()
 
+        print(self.store.open)
         if self.store.open == True:
             self.store.DrawStore(self.screen)
 
