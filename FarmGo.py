@@ -8,6 +8,7 @@ from scripts import Player
 from scripts import Store
 from scripts import Trash
 from scripts import Fence
+from scripts import Order
 from scripts.constants import *
 
 pygame.init()
@@ -17,7 +18,7 @@ pygame.init()
 
 
 class FarmGo:
-    BUTTON_PRESS_TIME = 0
+    BUTTON_PRESS_TIME = AUX_CURRENT_TIME = 0
 
     def __init__(self):
         pygame.init()
@@ -33,7 +34,7 @@ class FarmGo:
         self.collideSprites = pygame.sprite.Group()
         #* Dedicated to soil (cause it isn't affected by layer order)
         self.soilsSprite = pygame.sprite.Group()
-
+        self.order = Order.Order()
         #* Draw Level
         self.soils = self.drawGrid(int(SCALE * 16), int(WIDTH/7), int(HEIGHT/2.5))
         self.soilsSprite.add(self.soils)
@@ -119,6 +120,10 @@ class FarmGo:
 
         if self.store.open == True:
             self.store.DrawStore(self.screen)
+
+        self.order.NewOrder(self.AUX_CURRENT_TIME, self.screen)
+        self.AUX_CURRENT_TIME = self.order.GetCurrentTime()
+            
         #pygame.draw.rect(self.screen, (255, 0, 0), self.waterfont.hitbox_interact)
         #pygame.draw.rect(self.screen, (255, 0, 0), self.fence_bottom.hitbox)
         #pygame.draw.rect(self.screen, (255, 0, 0), self.fence_right.hitbox)

@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+from scripts.constants import *
 
 #TODO: add a function to check if the player is inside the hitbox_interact (DONE)
 #TODO: create a simple inventory system
@@ -56,6 +57,7 @@ class Player(pygame.sprite.Sprite):
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()
             print(self.direction)
+            self.wall_collision()
             self.hitbox.x += self.direction.x * self.speed
             self.collision('horizontal')
             self.hitbox.y += self.direction.y * self.speed
@@ -68,6 +70,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.centerx = self.hitbox.centerx
         self.rect.topleft = self.hitbox.topleft + pygame.Vector2(-self.size/6, -self.size/6*5.2)
         self.hitbox_soil.center = self.hitbox.center + pygame.Vector2(0, self.size/10)
+
     def CheckSoilCollision(self):
         for sprite in self.soils:
             if sprite.hitbox.colliderect(self.hitbox_soil):
@@ -119,6 +122,17 @@ class Player(pygame.sprite.Sprite):
                     if self.direction.y < 0:
                         self.hitbox.top = sprite.hitbox.bottom
                         print("colision up")
+
+    def wall_collision(self):
+        if self.hitbox[1] <= HEIGHT * 0.09:
+            if self.direction.y < 0:
+                self.direction.y = 0
+        if self.hitbox[1] >= HEIGHT * 0.95:
+            if self.direction.y > 0:
+                self.direction.y = 0
+        if self.hitbox[0] >= WIDTH * 0.95:
+            if self.direction.x > 0:
+                self.direction.x = 0
 
     def update(self):
         self.input()
