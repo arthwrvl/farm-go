@@ -37,6 +37,9 @@ class Player(pygame.sprite.Sprite):
         self.hitbox_soil = pygame.Rect(self.rect.x, self.rect.y, int(self.size/3*2)/2, self.size/5*3/2)
         self.SyncHitbox()
 
+        self.money = 50
+        self.score = 0
+
     def input(self):
         keys = pygame.key.get_pressed()
 
@@ -56,7 +59,7 @@ class Player(pygame.sprite.Sprite):
     def move(self):
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()
-            print(self.direction)
+            #print(self.direction)
             self.wall_collision()
             self.hitbox.x += self.direction.x * self.speed
             self.collision('horizontal')
@@ -74,8 +77,8 @@ class Player(pygame.sprite.Sprite):
     def CheckSoilCollision(self):
         for sprite in self.soils:
             if sprite.hitbox.colliderect(self.hitbox_soil):
-                print("Colision")
-                print(self.selectedSoil)
+                #print("Colision")
+                #print(self.selectedSoil)
                 if self.selectedSoil != {}:
                     if self.selectedSoil != sprite:
                         self.selectedSoil.Deselect()
@@ -107,21 +110,21 @@ class Player(pygame.sprite.Sprite):
             for sprite in self.obstacles:
                 if sprite.hitbox.colliderect(self.hitbox):
                     if self.direction.x > 0:
-                        print("colision right")
+                        #print("colision right")
                         self.hitbox.right = sprite.hitbox.left
                     if self.direction.x < 0:
                         self.hitbox.left = sprite.hitbox.right
-                        print("colision left")
+                        #print("colision left")
         
         if direction == 'vertical':
             for sprite in self.obstacles:
                 if sprite.hitbox.colliderect(self.hitbox):
                     if self.direction.y > 0:
                         self.hitbox.bottom = sprite.hitbox.top
-                        print("colision down")
+                        #print("colision down")
                     if self.direction.y < 0:
                         self.hitbox.top = sprite.hitbox.bottom
-                        print("colision up")
+                        #print("colision up")
 
     def wall_collision(self):
         if self.hitbox[1] <= HEIGHT * 0.09:

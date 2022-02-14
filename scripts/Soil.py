@@ -16,7 +16,7 @@ class Soil(pygame.sprite.Sprite):
             self.prepared.append(pygame.image.load(f"data/sprites/scenary/Soil/prepared/{i}.png"))
 
         #*set state
-        self.state = 0 # 0 = dry, 1 = prepared, 2 = planted, 3 = need water, 4 = choosing seed, 5 = saved
+        self.state = 0 # 0 = dry, 1 = prepared, 2 = planted, 3 = need water, 4 = choosing seed, 5 = picked
 
         #*set image
         self.image = self.dry[0]
@@ -47,6 +47,17 @@ class Soil(pygame.sprite.Sprite):
             self.seed.show_img_fruit(self.image, self.size/9, self.size/9)
             self.selected = False
             self.state = 5
+
+    def PickFruit(self):
+        if self.state == 5:
+            if self.seed.fruit[0] in Seed.Seed.picked_fruits:
+                Seed.Seed.picked_fruits[self.seed.fruit[0]] += 1
+            else:
+                Seed.Seed.picked_fruits[self.seed.fruit[0]] = 1
+            print("picked!")
+            print(Seed.Seed.picked_fruits)
+            self.state = 0
+            self.ChangeState()
    
     def ChangeState(self):
         if self.state == 0:
@@ -56,7 +67,7 @@ class Soil(pygame.sprite.Sprite):
             self.lastImage = self.prepared[0]
             self.Select()
         elif self.state == 2:
-            print("planted")
+            #print("planted")
             self.AddSeed()
             #add seed sprite
         elif self.state == 3:

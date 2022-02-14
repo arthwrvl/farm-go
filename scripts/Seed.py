@@ -5,21 +5,31 @@ from pygame.locals import *
 
 
 class Seed:
+    pos = -1
     seeds = [
         pygame.image.load(f"data/sprites/itens/Seed/seed_{i}.png")
         for i in range(len(Fruit.Fruit.fruits))
     ]
+    picked_fruits = {}
 
     def __init__(self, growing_time):
-        self.random_fruit = Fruit.Fruit.random_fruit()
-        self.fruit = [self.random_fruit.name, self.random_fruit.shelf_life, self.random_fruit.img]
+        self.pos = Seed.pos
+        self.sorted_fruit = Fruit.Fruit.sorted_fruit(self.pos)
+        self.fruit = [self.sorted_fruit.name, self.sorted_fruit.shelf_life, self.sorted_fruit.img, self.sorted_fruit.sale_price]
         self.growing_time = (growing_time + self.fruit[1]) // 2
         self.price = (self.fruit[1] - self.growing_time) * 10
-        self.img = self.seeds[Fruit.Fruit.fruits.index([self.random_fruit.name, self.random_fruit.shelf_life, self.random_fruit.img])]
+        self.img = self.seeds[Fruit.Fruit.fruits.index([self.sorted_fruit.name, self.sorted_fruit.shelf_life, self.sorted_fruit.img, self.sorted_fruit.sale_price])]
         
     @classmethod
     def random_growing_time(cls):
-        growing_time = randint(5, 15)
+        growing_time = randint(5, 10)
+
+        if cls.pos < len(Fruit.Fruit.fruits) - 1:
+            #print(cls.pos)
+            cls.pos += 1
+        else:
+            #print(cls.pos)
+            cls.pos = 0
 
         return cls(growing_time)
 
@@ -27,7 +37,7 @@ class Seed:
         screen.blit(self.img, (x, y))
 
     def show_img_fruit(self, screen, x, y):
-        self.random_fruit.show_img(screen, x, y)
+        self.sorted_fruit.show_img(screen, x, y)
 
     @property
     def growing_time(self):
@@ -39,8 +49,8 @@ class Seed:
 
         if value < 5:
             value = 5
-        elif value > 15:
-            value = 15
+        elif value > 10:
+            value = 10
 
         self._growing_time = value
 

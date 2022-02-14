@@ -87,6 +87,9 @@ class FarmGo:
                     self.player.vertical = 0
                 if event.key == K_a or event.key == K_d:
                     self.player.horizontal = 0
+                if event.key == K_p:
+                    if self.player.selectedSoil != {}:
+                        self.player.selectedSoil.PickFruit()
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if self.store.open == True:
@@ -97,9 +100,11 @@ class FarmGo:
                     if self.player.select != {}:
                         self.player.select.Interact()
                 if event.button == 2:
-                    self.BUTTON_PRESS_TIME = pygame.time.get_ticks() // 1000
-                    self.SEED_TIME = self.player.selectedSoil.seed.growing_time
-                    print(self.SEED_TIME)
+                    if self.player.selectedSoil != {}:
+                        print("planted")
+                        self.BUTTON_PRESS_TIME = pygame.time.get_ticks() // 1000
+                        self.SEED_TIME = self.player.selectedSoil.seed.growing_time
+                        print(f"SEED TIME = {self.SEED_TIME}")
                 if event.button == 3:
                     if self.player.selectedSoil != {}:
                         self.player.selectedSoil.ChangeSeed()
@@ -107,7 +112,8 @@ class FarmGo:
         if self.BUTTON_PRESS_TIME != 0:
             if self.current_time - self.BUTTON_PRESS_TIME >= self.SEED_TIME:
                 if self.player.selectedSoil != {}:
-                    self.player.selectedSoil.SaveSeed()         
+                    self.player.selectedSoil.SaveSeed()
+
                 self.BUTTON_PRESS_TIME = 0  
     
     def updateSprites(self):
@@ -121,12 +127,13 @@ class FarmGo:
         #self.allSprites.draw(self.screen)
         self.allSprites.Custom_draw()
 
-        print(self.store.open)
+        #print(self.store.open)
         if self.store.open == True:
             self.store.DrawStore(self.screen)
 
         self.order.NewOrder(self.AUX_CURRENT_TIME, self.screen)
         self.AUX_CURRENT_TIME = self.order.GetCurrentTime()
+        self.order.CheckOrderCollision(self.player.hitbox, self.player)
             
         #pygame.draw.rect(self.screen, (255, 0, 0), self.waterfont.hitbox_interact)
         #pygame.draw.rect(self.screen, (255, 0, 0), self.fence_bottom.hitbox)
