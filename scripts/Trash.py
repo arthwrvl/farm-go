@@ -19,6 +19,7 @@ class Trash(pygame.sprite.Sprite):
         self.hitbox_interact = pygame.Rect(self.pos[0], self.pos[1], self.size*0.9, self.size*0.8)
         self.hitbox_interact.topright = self.pos
         self.hitbox.topright = self.pos
-    def Interact(self):
-        print("Interact with trash")
+    def Interact(self, player):
+        if player.inventory.selected != 0 and player.inventory.selected != 1:
+            player.inventory.removeItembyIndex(player.inventory.selected)
     

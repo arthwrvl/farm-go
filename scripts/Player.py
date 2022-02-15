@@ -8,7 +8,7 @@ from scripts.constants import *
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, size, speed, obstacles, soils):
+    def __init__(self, x, y, size, speed, obstacles, soils, inventory):
         pygame.sprite.Sprite.__init__(self)
         #* load images
         self.sprites = []
@@ -17,7 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.obstacles = obstacles
         self.x = x
         self.y = y
-
+        self.inventory = inventory
         self.soils = soils
 
 
@@ -43,15 +43,15 @@ class Player(pygame.sprite.Sprite):
     def input(self):
         keys = pygame.key.get_pressed()
 
-        if keys[K_RIGHT]:
+        if keys[K_RIGHT] or keys[K_d]:
             self.direction.x = 1
-        elif keys[K_LEFT]:
+        elif keys[K_LEFT] or keys[K_a]:
             self.direction.x = -1
         else:
             self.direction.x = 0
-        if keys[K_UP]:
+        if keys[K_UP] or keys[K_w]:
             self.direction.y = -1
-        elif keys[K_DOWN]:
+        elif keys[K_DOWN] or keys[K_s]:
             self.direction.y = 1
         else:
             self.direction.y = 0
@@ -97,7 +97,7 @@ class Player(pygame.sprite.Sprite):
     def Trigger(self):
         for sprite in self.obstacles:
             if sprite.hitbox_interact.colliderect(self.hitbox):
-                print(self.select)
+                #print(self.select)
                 self.select = sprite
                 break
             else:

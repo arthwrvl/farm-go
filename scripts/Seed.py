@@ -5,21 +5,40 @@ from pygame.locals import *
 
 
 class Seed:
-    pos = -1
-    seeds = [
-        pygame.image.load(f"data/sprites/itens/Seed/seed_{i}.png")
-        for i in range(len(Fruit.Fruit.fruits))
-    ]
-    picked_fruits = {}
+    def __init__(self, index, price, growing_time):
+        self.fruit = Fruit.fruits[index]
+        self.name = self.fruit.name + " seed"
+        self.price = price
+        self.image = pygame.image.load(f"data/sprites/itens/Seed/seed_{index}.png")
+        self.growing_time = growing_time
+        #self.rect = self.image.get_rect(topleft = (0,0))
+        #self.pos = Seed.pos
+        #self.sorted_fruit = Fruit.Fruit.sorted_fruit(self.pos)
+        #self.fruit = [self.sorted_fruit.name, self.sorted_fruit.shelf_life, self.sorted_fruit.img, self.sorted_fruit.sale_price]
+        #self.growing_time = (growing_time + self.fruit[1]) // 2
+        #self.price = (self.fruit[1] - self.growing_time) * 10
+        #self.img = self.seeds[Fruit.Fruit.fruits.index([self.sorted_fruit.name, self.sorted_fruit.shelf_life, self.sorted_fruit.img, self.sorted_fruit.sale_price])]
+    def show_image(self, screen, x, y):
+        screen.blit(self.image, (x, y))
 
-    def __init__(self, growing_time):
-        self.pos = Seed.pos
-        self.sorted_fruit = Fruit.Fruit.sorted_fruit(self.pos)
-        self.fruit = [self.sorted_fruit.name, self.sorted_fruit.shelf_life, self.sorted_fruit.img, self.sorted_fruit.sale_price]
-        self.growing_time = (growing_time + self.fruit[1]) // 2
-        self.price = (self.fruit[1] - self.growing_time) * 10
-        self.img = self.seeds[Fruit.Fruit.fruits.index([self.sorted_fruit.name, self.sorted_fruit.shelf_life, self.sorted_fruit.img, self.sorted_fruit.sale_price])]
-        
+    def show_fruit(self, screen, x, y):
+        screen.blit(self.fruit.image, (x, y))
+
+seeds = list()
+seeds.append(Seed(0, 2, 12))
+seeds.append(Seed(1, 2, 10))
+seeds.append(Seed(2, 1, 13))
+seeds.append(Seed(3, 3, 15))
+seeds.append(Seed(4, 2, 8))
+seeds.append(Seed(5, 1, 13))
+seeds.append(Seed(6, 2, 7))
+seeds.append(Seed(7, 2, 11))
+seeds.append(Seed(8, 3, 8))
+seeds.append(Seed(9, 2, 11))
+
+
+
+''' 
     @classmethod
     def random_growing_time(cls):
         growing_time = randint(5, 10)
@@ -69,4 +88,4 @@ class Seed:
             value = 200
 
         self._price = value
-
+'''

@@ -1,6 +1,8 @@
 import pygame 
 from pygame.locals import *
 from scripts.Button import Button
+from scripts import Fruit
+from scripts import Seed
 from scripts.StoreItem import StoreItem
 from scripts.constants import *
 
@@ -28,7 +30,7 @@ class Store(pygame.sprite.Sprite):
         self.hitbox = pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1]/10*8)
         self.hitbox_interact = pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
 
-    def Interact(self):
+    def Interact(self, player):
         if self.open == False:
             self.open = True
     
@@ -36,7 +38,7 @@ class Store(pygame.sprite.Sprite):
         background = pygame.image.load("data/sprites/store/background.png").convert_alpha()
         background = pygame.transform.scale(background, (int(150*SCALE), int(105*SCALE)))
 
-        itens = self.LoadItens()
+        self.itens = self.LoadItens()
 
         text = get_font(int(10*SCALE)).render("Store", 1, "#48180e")
         text_rect = text.get_rect(center=(WIDTH/2, HEIGHT/4*0.8))
@@ -48,10 +50,11 @@ class Store(pygame.sprite.Sprite):
         screen.blit(text, text_rect)
         for i in range(0, 2):
             for j in range(0, 5):
-                item_rect = pygame.Rect(itens[i*5+j].rect.left + 7*SCALE*j + (j*itens[i*5+j].rect.width), itens[i*5+j].rect.top + 4*SCALE*i + + (i*itens[i*5+j].rect.height), itens[i*5+j].rect.width, itens[i*5+j].rect.height)
-                screen.blit(itens[i*5+j].image, item_rect)
-                price = get_font(int(4*SCALE)).render("$ " + str(itens[i*5+j].price), 1, "#48180e")
-                name = get_font(int(4*SCALE)).render(str(itens[i*5+j].name), 1, "#48180e")
+                item_rect = pygame.Rect(self.itens[i*5+j].rect.left + 7*SCALE*j + (j*self.itens[i*5+j].rect.width), self.itens[i*5+j].rect.top + 4*SCALE*i + + (i*self.itens[i*5+j].rect.height), self.itens[i*5+j].rect.width, self.itens[i*5+j].rect.height)
+                self.itens[i*5+j].rect = item_rect
+                screen.blit(self.itens[i*5+j].image, item_rect)
+                price = get_font(int(5*SCALE)).render("$ " + str(self.itens[i*5+j].seed.price), 1, "#48180e")
+                name = get_font(int(4*SCALE)).render(str(self.itens[i*5+j].seed.fruit.name), 1, "#48180e")
                 price_rect = price.get_rect(topleft=(item_rect.width/2 + item_rect.x - price.get_rect().width/2, item_rect.height/2 + item_rect.y + SCALE*11))
                 name_rect = name.get_rect(topleft=(item_rect.width/2 + item_rect.x - name.get_rect().width/2, item_rect.height/2 + item_rect.y + SCALE*5))
                 screen.blit(price, price_rect)
@@ -59,16 +62,9 @@ class Store(pygame.sprite.Sprite):
 
     def LoadItens(self):
         itens = list()
-        itens.append(StoreItem("apple", 2, (WIDTH/4*0.91, HEIGHT/4*1.08)))
-        itens.append(StoreItem("avocado", 2, (WIDTH/4*0.91, HEIGHT/4*1.08)))
-        itens.append(StoreItem("banana", 1, (WIDTH/4*0.91, HEIGHT/4*1.08)))
-        itens.append(StoreItem("blueberry", 3, (WIDTH/4*0.91, HEIGHT/4*1.08)))
-        itens.append(StoreItem("carrot", 2, (WIDTH/4*0.91, HEIGHT/4*1.08)))
-        itens.append(StoreItem("lemon", 1, (WIDTH/4*0.91, HEIGHT/4*1.08)))
-        itens.append(StoreItem("orange", 2, (WIDTH/4*0.91, HEIGHT/4*1.08)))
-        itens.append(StoreItem("papaya", 2, (WIDTH/4*0.91, HEIGHT/4*1.08)))
-        itens.append(StoreItem("plum", 3, (WIDTH/4*0.91, HEIGHT/4*1.08)))
-        itens.append(StoreItem("potato", 2, (WIDTH/4*0.91, HEIGHT/4*1.08)))
+        for i in range(0, Seed.seeds.__len__()):
+            itens.append(StoreItem(Seed.seeds[i], (WIDTH/4*0.91, HEIGHT/4*1.08)))
+            
         return itens
 
 

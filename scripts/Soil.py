@@ -1,12 +1,16 @@
 import pygame
 from scripts import Seed
 from pygame.locals import *
+from scripts.Can import Can
+from random import randint
+
+from scripts.Hoe import Hoe
 
 
 class Soil(pygame.sprite.Sprite):
     def __init__(self, pos, size):
         pygame.sprite.Sprite.__init__(self)
-
+        self.seed = None
         self.selected = False
         #*load images
         self.dry = []
@@ -14,12 +18,12 @@ class Soil(pygame.sprite.Sprite):
         for i in range(1,4):
             self.dry.append(pygame.image.load(f"data/sprites/scenary/Soil/dry/{i}.png"))
             self.prepared.append(pygame.image.load(f"data/sprites/scenary/Soil/prepared/{i}.png"))
-
+        self.water = pygame.image.load("data/sprites/scenary/Soil/water_drop.png")
         #*set state
-        self.state = 0 # 0 = dry, 1 = prepared, 2 = planted, 3 = need water, 4 = choosing seed, 5 = picked
+        self.state = 0 # 0 = dry, 1 = prepared, 2 = need water, 3 = planted, 4 = ready, 5 = bad
 
         #*set image
-        self.image = self.dry[0]
+        self.image = self.dry[randint(0,2)]
         self.lastImage = self.image
 
         self.pos = pos
@@ -31,66 +35,77 @@ class Soil(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = self.pos)
         self.hitbox = pygame.Rect(self.pos[0], self.pos[1], self.size, self.size)
     
-    def AddSeed(self):
-        self.seed = Seed.Seed.random_growing_time()
-        print(self.seed.fruit[0])
-        self.seed.show_img(self.image, self.size/3, self.size/3)
-        self.state = 4
-        self.selected = False
-
-    def ChangeSeed(self):
-        if self.state == 4 or self.state == 2:
-            self.AddSeed()
+    def AddSeed(self, seed, screen):
+        self.seed = seed
+        #print(self.seed.fruit)
+        #self.seed.show_image(self.seed.image, self.size/3, self.size/3)
+        #self.state = 4
+        #self.selected = False
             
-    def SaveSeed(self):
-        if self.state == 4:
-            self.seed.show_img_fruit(self.image, self.size/9, self.size/9)
-            self.selected = False
-            self.state = 5
+    def grow_seed(self):
+        #print("grow")
+        if self.state != 4:
+            self.state = 4
+            self.image = self.dry[randint(0,2)]
+            self.Redraw()
+    def bad_fruit(self):
+        pass
+        #print("bad")
+        #self.seed.show_fruit(screen, self.size/3, self.size/3)
+        #self.state = 5
 
-    def PickFruit(self):
-        if self.state == 5:
-            if self.seed.fruit[0] in Seed.Seed.picked_fruits:
-                Seed.Seed.picked_fruits[self.seed.fruit[0]] += 1
-            else:
-                Seed.Seed.picked_fruits[self.seed.fruit[0]] = 1
-            print("picked!")
-            print(Seed.Seed.picked_fruits)
-            self.state = 0
-            self.ChangeState()
    
     def ChangeState(self):
         if self.state == 0:
-            self.image = self.dry[0]
+            self.image = self.dry[randint(0,2)]
         elif self.state == 1:
-            self.image = self.prepared[0]
-            self.lastImage = self.prepared[0]
+            index = randint(0,2)
+            self.image = self.prepared[index]
+            self.lastImage = self.prepared[index]
             self.Select()
         elif self.state == 2:
+            pass
             #print("planted")
-            self.AddSeed()
+            #self.AddSeed()
             #add seed sprite
         elif self.state == 3:
-            print("need water")
+            pass
+        elif self.state == 4:
+            self.image = self.dry[randint(0,2)]
+            #print("need water")
             #add water sprite
         self.Redraw()
 
-    def Interact(self):
+    def Interact(self, player, screen):
+        #print(self.state)
         if self.state == 0:
-            self.state = 1
-        elif self.state == 1:
-            self.state = 2
-        elif self.state == 3:
-            self.state = 2
-        self.ChangeState()
+            if isinstance(player.inventory.itens[player.inventory.selected].item, Hoe):
+                self.state = 1
+                self.ChangeState()
+        elif self.state == 1 and self.seed == None:
+            if isinstance(player.inventory.itens[player.inventory.selected].item, Seed.Seed):
+                self.AddSeed(player.inventory.itens[player.inventory.selected].item, screen)
+                player.inventory.removeItembyIndex(player.inventory.selected)
+                self.state = 2
+                self.ChangeState()
+        elif self.state == 2:
+            if isinstance(player.inventory.itens[player.inventory.selected].item, Can):
+                if player.inventory.itens[player.inventory.selected].item.use():
+                    self.state = 3
+                    self.ChangeState()
+        elif self.state == 4:
+            player.inventory.addItem(self.seed.fruit)
+            self.state = 0
+            self.seed = None
+            self.ChangeState()
+        
 
     def Select(self):
         if self.selected == False:
             self.lastImage = self.image.copy()
-            if self.state != 4:
-                self.color = pygame.Surface(self.image.get_size()).convert_alpha()
-                self.color.fill(pygame.Color("#FFFFFFAA"))
-                self.image.blit(self.color, (0, 0), special_flags=BLEND_RGBA_MULT)
+            self.color = pygame.Surface(self.image.get_size()).convert_alpha()
+            self.color.fill(pygame.Color("#FFFFFFAA"))
+            self.image.blit(self.color, (0, 0), special_flags=BLEND_RGBA_MULT)
             self.selected = True
 
     def Deselect(self):
@@ -102,7 +117,27 @@ class Soil(pygame.sprite.Sprite):
     def Redraw(self):
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.rect = self.image.get_rect(topleft = self.pos)
-    
+
+    def overdraw(self, screen):
+        if self.state == 2:
+            seed_image = pygame.transform.scale(self.seed.image, (int(self.size/3), int(self.size/3)))
+            seed_rect = seed_image.get_rect(center = self.rect.center)
+            screen.blit(seed_image, seed_rect)
+            self.water = pygame.transform.scale(self.water, (int(self.size*0.6), int(self.size*0.6)))
+            screen.blit(self.water, self.pos)
+        elif self.state == 3:
+            seed_image = pygame.transform.scale(self.seed.image, (int(self.size/3), int(self.size/3)))
+            seed_rect = seed_image.get_rect(center = self.rect.center)
+            screen.blit(seed_image, seed_rect)
+        if self.state == 4:
+            if(self.seed != None):
+                self.seed.fruit.image = pygame.transform.scale(self.seed.fruit.image, (int(self.size*0.8), int(self.size*0.8)))
+                fruit_rect = self.seed.fruit.image.get_rect(center = self.rect.center)
+                screen.blit(self.seed.fruit.image, fruit_rect)
+
+'''
+
+'''
 
         
 

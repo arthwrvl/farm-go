@@ -1,6 +1,8 @@
 import pygame
 from pygame.locals import *
 
+from scripts.Can import Can
+
 #TODO: fill water can on interact
 
 class Waterfont(pygame.sprite.Sprite):
@@ -35,5 +37,6 @@ class Waterfont(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = self.pos)
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         
-    def Interact(self):
-        print("Interact with waterfont")
+    def Interact(self, player):
+        if isinstance(player.inventory.itens[player.inventory.selected].item, Can):
+            player.inventory.itens[player.inventory.selected].item.value += 1

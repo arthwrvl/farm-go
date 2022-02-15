@@ -9,7 +9,7 @@ from scripts.constants import *
 class Order:
     def __init__(self):
         self.random_fruit = Fruit.Fruit.random_fruit()
-        self.fruit = [self.random_fruit.name, self.random_fruit.shelf_life, self.random_fruit.img, self.random_fruit.sale_price]
+        self.fruit = [self.random_fruit.name, self.random_fruit.shelf_life, self.random_fruit.image, self.random_fruit.sale_price]
         self.number = randint(1, 3)
         self.waiting_time = 60
         self.show = False
