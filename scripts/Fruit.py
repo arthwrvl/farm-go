@@ -1,10 +1,7 @@
 import pygame
-from random import randint
 from pygame.locals import *
 from scripts.constants import *
 
-#*removed random and sorted methods
-#* added fruits to list
 
 class Fruit:
     def __init__(self, name, shelf_life, img, sale_price):
@@ -15,24 +12,6 @@ class Fruit:
         self.sale_price = sale_price
         self.fruits = [name, shelf_life, img, sale_price]
        
-   # @classmethod
-   # def random_fruit(cls):
-    #    ID = randint(0, 9)
-    #    name = cls.fruits[ID][0]
-    #    shelf_life = cls.fruits[ID][1]
-    #    img = cls.fruits[ID][2]
-    #    sale_price = cls.fruits[ID][3]
-
-    #    return cls(name, shelf_life, img, sale_price)
-
-    #@classmethod
-    #def sorted_fruit(cls, pos):
-    #    name = cls.fruits[pos][0]
-    #    shelf_life = cls.fruits[pos][1]
-    #    img = cls.fruits[pos][2]
-    #    sale_price = cls.fruits[pos][3]
-
-    #    return cls(name, shelf_life, img, sale_price)
 
     def show_img(self, screen, x, y):
         self.image = pygame.transform.scale(self.image, (int(SCALE * 12), int(SCALE * 12)))

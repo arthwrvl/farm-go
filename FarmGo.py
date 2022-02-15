@@ -1,28 +1,18 @@
-#from asyncio import constants
 from random import randint
-from numpy import deprecate_with_doc
+from time import sleep
 import pygame
 from pygame.locals import *
 from sys import exit
-from scripts import Soil
-from scripts import Waterfont
-from scripts import Player
-from scripts import Store
-from scripts import Trash
-from scripts import Fence
-from scripts import Order
-from scripts import Fruit
+from scripts import Soil, Waterfont, Player, Store, Trash, Fence, Order, Fruit, Info
 from scripts.Can import Can
 from scripts.Car import Car
 from scripts.Hoe import Hoe
+from scripts.GameOver import GameOver
 from scripts.Inventory import Inventory
 from scripts.Slot import Slot
 from scripts.constants import *
 
 pygame.init()
-
-
-#TODO: create the UI
 
 
 class FarmGo:
@@ -116,7 +106,9 @@ class FarmGo:
         self.player = Player.Player(int((WIDTH/2) - (PLAYER_WIDTH/2)), int((HEIGHT/2) - (PLAYER_WIDTH*1.5/2)), PLAYER_WIDTH, PLAYER_WIDTH/10, self.collideSprites, self.soils, inventory)
         self.allSprites.add(self.player)
 
-        #self.soilsSprite.add(self.player)
+        self.info = Info.Info()
+        self.game_over = GameOver()
+
         self.run()
     
     def run(self):
@@ -189,8 +181,6 @@ class FarmGo:
                 if event.button == 1:
                     if self.store.open == True:
                         self.store.open = not self.store.close_button.Interact()
-
-                            #self.player.inventory.add(i)
         
         if self.soiltoremove != None:
             print("tem")
@@ -221,7 +211,6 @@ class FarmGo:
         self.soilsSprite.draw(self.screen)
         for i in self.soilsSprite:
             i.overdraw(self.screen)
-        #self.allSprites.draw(self.screen)
         self.allSprites.Custom_draw()
         self.player.inventory.drawInventory(self.screen)
         #print(self.store.open)
@@ -230,23 +219,26 @@ class FarmGo:
         self.car.drawDeliver(self.screen)
         self.generateOrder()
 
+        self.info.DrawMoney(self.screen, self.player.money)
+        self.info.DrawScore(self.screen, self.player.score)
+        self.info.DrawTime(self.screen, self.current_time)
+
+        if self.current_time >= 240:
+            self.game_over.DrawGameOver(self.screen, self.player.score)
+            
+            if self.current_time == 5 + 1:
+                sleep(10)
+                pygame.quit()
+                exit()
+
         for i in range(0, len(self.orders)):
             self.orders[i].DrawOrder(self.screen, i , self.current_time - self.orders_time[i])
             if self.orders[i].waiting_time < self.current_time - self.orders_time[i]:
                 self.toremove = i
-             #   self.orders.pop(i)
-              #  self.orders_time.pop(i)
-              #  break
-        #self.order.CheckOrderCollision(self.player.hitbox, self.player)
         if len(self.orders) > 0 and self.toremove != 10:
             self.orders.pop(self.toremove)
             self.orders_time.pop(self.toremove)
             self.toremove = 10
-        #pygame.draw.rect(self.screen, (255, 0, 0), self.car.hitbox_interact)
-        #pygame.draw.rect(self.screen, (255, 0, 0), self.fence_bottom.hitbox)
-        #pygame.draw.rect(self.screen, (255, 0, 0), self.fence_right.hitbox)
-        #pygame.draw.rect(self.screen, (0, 255, 0), self.player.hitbox)
-        #pygame.draw.rect(self.screen, (255, 0, 0), self.player.hitbox_soil)
         pygame.display.flip()
 
     def drawGrid(self, cellsize, width, height):
@@ -265,7 +257,6 @@ class FarmGo:
                 self.generated = self.current_time
                 self.orders_time.append(self.current_time)
                 self.toNew = randint(15, 25)
-
 
 
 class YsortGroup(pygame.sprite.Group):

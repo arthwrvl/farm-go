@@ -2,10 +2,6 @@ import pygame
 from pygame.locals import *
 from scripts.constants import *
 
-#TODO: add a function to check if the player is inside the hitbox_interact (DONE)
-#TODO: create a simple inventory system
-#TODO: make the player collect the hortifrutti
-
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, size, speed, obstacles, soils, inventory):
@@ -23,8 +19,6 @@ class Player(pygame.sprite.Sprite):
 
         #* set movement
         self.direction = pygame.math.Vector2(0, 0)
-        #self.vertical = 0
-        #self.horizontal = 0
         self.speed = speed
         self.selectedSoil = {}
         self.rect = self.image.get_rect()

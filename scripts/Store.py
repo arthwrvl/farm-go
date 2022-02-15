@@ -6,10 +6,6 @@ from scripts import Seed
 from scripts.StoreItem import StoreItem
 from scripts.constants import *
 
-#TODO: instantiate store screen (in progress)
-#!ERROR: not closing store because when closed, it opens again (maybe a countdown would fix this)
-#TODO: buy itens on click 
-
 
 class Store(pygame.sprite.Sprite):
     def __init__(self, pos, size, groups, screen):
@@ -22,7 +18,6 @@ class Store(pygame.sprite.Sprite):
         self.pos = pos
         self.close_button = Button("", (WIDTH - WIDTH/4*0.87, HEIGHT/4*0.63))
         self.open = False
-
         
         self.size = size
         self.image = pygame.transform.scale(self.image, self.size)

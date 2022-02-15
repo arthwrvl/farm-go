@@ -14,7 +14,7 @@ class StoreItem:
     
     def interact(self, player):
         pos = pygame.mouse.get_pos()
-        if self.rect.collidepoint(pos):
+        if self.rect.collidepoint(pos) and self.seed.price <= player.money:
             player.inventory.addItem(self.seed)
             print("bought " + self.seed.fruit.name)
             player.money -= self.seed.price
