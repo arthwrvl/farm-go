@@ -1,4 +1,5 @@
 #from asyncio import constants
+from random import randint
 import pygame
 from pygame.locals import *
 from sys import exit
@@ -11,6 +12,7 @@ from scripts import Fence
 from scripts import Order
 from scripts import Fruit
 from scripts.Can import Can
+from scripts.Car import Car
 from scripts.Hoe import Hoe
 from scripts.Inventory import Inventory
 from scripts.Slot import Slot
@@ -39,7 +41,8 @@ class FarmGo:
         self.collideSprites = pygame.sprite.Group()
         #* Dedicated to soil (cause it isn't affected by layer order)
         self.soilsSprite = pygame.sprite.Group()
-        self.order = Order.Order()
+        self.orders = list()
+        self.orders_time = list()
         #* Draw Level
         self.soils = self.drawGrid(int(SCALE * 16), int(WIDTH/7), int(HEIGHT/2.2))
         self.soilsSprite.add(self.soils)
@@ -51,8 +54,11 @@ class FarmGo:
         self.fence_right = Fence.Fence((int(WIDTH - 33*SCALE), int(44*SCALE)), [self.collideSprites, self.allSprites], (int(SCALE*8), int(91*SCALE)), "side", (int(SCALE*8), int(70*SCALE)), (0, 10*SCALE))
         self.fence_left = Fence.Fence((int(15*SCALE), int(44*SCALE)), [self.collideSprites, self.allSprites], (int(SCALE*8), int(91*SCALE)), "side_2", (int(SCALE*8), int(85*SCALE)), (0,0))
         self.fence_bottom = Fence.Fence((int(15*SCALE), int((HEIGHT - 21.5*SCALE))), [self.collideSprites, self.allSprites], (int(SCALE*128), int(22*SCALE)), "bottom", (int(SCALE*128), int(11*SCALE)), (0,11*SCALE))
-
+        self.car = Car((int(WIDTH/2*1.21), int(HEIGHT - 40*SCALE)), (57, 50), [self.allSprites, self.collideSprites])
         inventory = Inventory(5, (WIDTH*0.73, HEIGHT*0.86), 12)
+        self.generated = 3
+        self.toNew = 0
+        self.toremove = 10
         hoe = Hoe()
         can = Can()
         inventory.addItem(hoe)
@@ -61,7 +67,7 @@ class FarmGo:
         self.growing_seeds = list()
         self.seeds_time = list()
         self.planted_time = list()
-
+        self.current_time = 0
 
         #* Draw Player
         self.player = Player.Player(int((WIDTH/2) - (PLAYER_WIDTH/2)), int((HEIGHT/2) - (PLAYER_WIDTH*1.5/2)), PLAYER_WIDTH, PLAYER_WIDTH/10, self.collideSprites, self.soils, inventory)
@@ -119,14 +125,10 @@ class FarmGo:
                         self.player.select.Interact(self.player)
                         break
                 if event.button == 2:
-                    if self.player.selectedSoil != {}:
-                        print("planted")
-                        self.BUTTON_PRESS_TIME = pygame.time.get_ticks() // 1000
-                        self.SEED_TIME = self.player.selectedSoil.seed.growing_time
-                        print(f"SEED TIME = {self.SEED_TIME}")
+                    pass
                 if event.button == 3:
-                    if self.player.selectedSoil != {}:
-                        self.player.selectedSoil.ChangeSeed()
+                    if isinstance(self.player.select, Car):
+                        self.player.select.Deliver(self.orders, self.player)
                 if event.button == 4:
                     if self.player.inventory.selected < 4:
                         self.player.inventory.selected += 1
@@ -180,12 +182,22 @@ class FarmGo:
         #print(self.store.open)
         if self.store.open == True:
             self.store.DrawStore(self.screen)
+        self.car.drawDeliver(self.screen)
+        self.generateOrder()
 
-        self.order.NewOrder(self.AUX_CURRENT_TIME, self.screen)
-        self.AUX_CURRENT_TIME = self.order.GetCurrentTime()
+        for i in range(0, len(self.orders)):
+            self.orders[i].DrawOrder(self.screen, i , self.current_time - self.orders_time[i])
+            if self.orders[i].waiting_time < self.current_time - self.orders_time[i]:
+                self.toremove = i
+             #   self.orders.pop(i)
+              #  self.orders_time.pop(i)
+              #  break
         #self.order.CheckOrderCollision(self.player.hitbox, self.player)
-            
-        #pygame.draw.rect(self.screen, (255, 0, 0), self.waterfont.hitbox_interact)
+        if len(self.orders) > 0 and self.toremove != 10:
+            self.orders.pop(self.toremove)
+            self.orders_time.pop(self.toremove)
+            self.toremove = 10
+        #pygame.draw.rect(self.screen, (255, 0, 0), self.car.hitbox_interact)
         #pygame.draw.rect(self.screen, (255, 0, 0), self.fence_bottom.hitbox)
         #pygame.draw.rect(self.screen, (255, 0, 0), self.fence_right.hitbox)
         #pygame.draw.rect(self.screen, (0, 255, 0), self.player.hitbox)
@@ -200,7 +212,15 @@ class FarmGo:
                 solo = Soil.Soil((width + i * cellsize + gap*i, height + j * cellsize + gap*j), cellsize)
                 soils.append(solo)
         return soils
-    
+    def generateOrder(self):
+            if self.current_time - self.generated > self.toNew:
+                order = Order.Order()
+                order.show = True
+                self.orders.append(order)
+                self.generated = self.current_time
+                self.orders_time.append(self.current_time)
+                self.toNew = randint(15, 25)
+
 
 
 class YsortGroup(pygame.sprite.Group):

@@ -35,7 +35,7 @@ class Fruit:
     #    return cls(name, shelf_life, img, sale_price)
 
     def show_img(self, screen, x, y):
-        self.image = pygame.transform.scale(self.image, (int(SCALE * 14), int(SCALE * 14)))
+        self.image = pygame.transform.scale(self.image, (int(SCALE * 12), int(SCALE * 12)))
         screen.blit(self.image, (x, y)) 
 
     @property
