@@ -8,10 +8,12 @@ from scripts.constants import *
 
 class Order:
     def __init__(self):
-        self.random_fruit = Fruit.Fruit.random_fruit()
+        #self.random_fruit = Fruit.Fruit.random_fruit()
+        self.random_id = randint(0, len(Fruit.fruits) - 1)
+        self.random_fruit = Fruit.fruits[self.random_id]
         self.fruit = [self.random_fruit.name, self.random_fruit.shelf_life, self.random_fruit.image, self.random_fruit.sale_price]
         self.number = randint(1, 3)
-        self.waiting_time = 60
+        self.waiting_time = 40
         self.show = False
         self.screen = pygame.display.get_surface()
         self.background = pygame.Rect((self.screen.get_width()*0.88,self.screen.get_height()*0.1),(self.screen.get_width()*0.1, self.screen.get_height()*0.2))

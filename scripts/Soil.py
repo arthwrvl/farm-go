@@ -131,9 +131,10 @@ class Soil(pygame.sprite.Sprite):
             screen.blit(seed_image, seed_rect)
         if self.state == 4:
             if(self.seed != None):
-                self.seed.fruit.image = pygame.transform.scale(self.seed.fruit.image, (int(self.size*0.8), int(self.size*0.8)))
-                fruit_rect = self.seed.fruit.image.get_rect(center = self.rect.center)
-                screen.blit(self.seed.fruit.image, fruit_rect)
+                fruit_image = self.seed.fruit.image.copy()
+                fruit_image = pygame.transform.scale(fruit_image, (int(self.size*0.8), int(self.size*0.8)))
+                fruit_rect = fruit_image.get_rect(center = self.rect.center)
+                screen.blit(fruit_image, fruit_rect)
 
 '''
 

@@ -39,7 +39,7 @@ class FarmGo:
         self.collideSprites = pygame.sprite.Group()
         #* Dedicated to soil (cause it isn't affected by layer order)
         self.soilsSprite = pygame.sprite.Group()
-        #self.order = Order.Order()
+        self.order = Order.Order()
         #* Draw Level
         self.soils = self.drawGrid(int(SCALE * 16), int(WIDTH/7), int(HEIGHT/2.2))
         self.soilsSprite.add(self.soils)
@@ -181,8 +181,8 @@ class FarmGo:
         if self.store.open == True:
             self.store.DrawStore(self.screen)
 
-        #self.order.NewOrder(self.AUX_CURRENT_TIME, self.screen)
-        #self.AUX_CURRENT_TIME = self.order.GetCurrentTime()
+        self.order.NewOrder(self.AUX_CURRENT_TIME, self.screen)
+        self.AUX_CURRENT_TIME = self.order.GetCurrentTime()
         #self.order.CheckOrderCollision(self.player.hitbox, self.player)
             
         #pygame.draw.rect(self.screen, (255, 0, 0), self.waterfont.hitbox_interact)
