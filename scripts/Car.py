@@ -31,18 +31,25 @@ class Car(pygame.sprite.Sprite):
             print("drew")
 
     def Deliver(self, orderlist, player):
-        for i in orderlist:
-            if i.random_fruit in self.deliver:
-                if self.deliver.count(i.random_fruit) >= i.number:
-                    player.money += i.random_fruit.sale_price
-                    player.score += randint(10*i.number, 15*i.number)
-                    self.deliver = list()
-                    orderlist.remove(i)
-                    return True
-        player.score -= randint(10*i.number, 15*i.number)
-        self.deliver = list()
-        print(player.score)
-        print(player.money)
+        if len(self.deliver) > 0:
+            for i in orderlist:
+                if i.random_fruit in self.deliver:
+                    if self.deliver.count(i.random_fruit) >= i.number:
+                        player.money += i.random_fruit.sale_price * i.number
+                        player.score += randint(10*i.number, 15*i.number)
+                        self.deliver = list()
+                    else:
+                        player.money += int(i.random_fruit.sale_price * self.deliver.count(i.random_fruit)/2)
+                        player.score += randint(5*self.deliver.count(i.random.fruit), 15*self.deliver.count(i.random_fruit))
+                        self.deliver = list()
+                    return orderlist.index(i)
+            
+            player.score -= randint(10*orderlist[0].number, 15**orderlist[0].number)
+            self.deliver = list()
+            print(player.score)
+            print(player.money)
+            return 0
+
 
 
                 

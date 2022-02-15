@@ -1,5 +1,6 @@
 #from asyncio import constants
 from random import randint
+from numpy import deprecate_with_doc
 import pygame
 from pygame.locals import *
 from sys import exit
@@ -33,17 +34,48 @@ class FarmGo:
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
         self.running = True
-    
-    def newGame(self):
+
+    def menu(self):
+        self.drawLevel()
+        self.allSprites.update()
+        self.soilsSprite.update(self.screen)
+        self.soilsSprite.draw(self.screen)
+        self.allSprites.Custom_draw()
+        vignete = pygame.Surface((WIDTH, HEIGHT))
+        vignete.set_alpha(128)
+        vignete.fill((0, 0, 0))
+        self.screen.blit(vignete, (0, 0))
+        title = pygame.image.load("data/sprites/title.png")
+        title = pygame.transform.scale(title, (int(150*SCALE), int(49*SCALE)))
+        title_rect = title.get_rect(topleft = (int(WIDTH/2 - (150*SCALE/2)), int(HEIGHT/2 - (49*SCALE))))
+        self.screen.blit(title, title_rect)
+        title_text = get_font(int(25*SCALE)).render("FARM GO", True, "#853605")
+        title_rect = title_text.get_rect(center = (int(WIDTH/2), int(HEIGHT/2 - 28*SCALE)))
+        self.screen.blit(title_text, title_rect)
+        call_to_action = get_second_font(int(20*SCALE)).render("Click anywhere to start", True, "#ffc879")
+        call_to_action_rect = call_to_action.get_rect(topleft = ( int(WIDTH/2 - (call_to_action.get_width()/2)), int(HEIGHT/3*2)))
+        self.screen.blit(call_to_action, call_to_action_rect)
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    if self.running:
+                        self.running = False
+                        pygame.quit()
+                        exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        self.running = False
+                        self.newGame()
+            pygame.display.flip()
+
+
+    def drawLevel(self):
         #* all sprites that will be rendered
         self.allSprites = YsortGroup()
         #* Dedicated to colision
         self.collideSprites = pygame.sprite.Group()
         #* Dedicated to soil (cause it isn't affected by layer order)
         self.soilsSprite = pygame.sprite.Group()
-        self.orders = list()
-        self.orders_time = list()
-        #* Draw Level
         self.soils = self.drawGrid(int(SCALE * 16), int(WIDTH/7), int(HEIGHT/2.2))
         self.soilsSprite.add(self.soils)
         self.waterfont = Waterfont.Waterfont((int((WIDTH/8)*4.6), int(HEIGHT/4)), int(SCALE * 50), [self.allSprites, self.collideSprites])
@@ -55,6 +87,17 @@ class FarmGo:
         self.fence_left = Fence.Fence((int(15*SCALE), int(44*SCALE)), [self.collideSprites, self.allSprites], (int(SCALE*8), int(91*SCALE)), "side_2", (int(SCALE*8), int(85*SCALE)), (0,0))
         self.fence_bottom = Fence.Fence((int(15*SCALE), int((HEIGHT - 21.5*SCALE))), [self.collideSprites, self.allSprites], (int(SCALE*128), int(22*SCALE)), "bottom", (int(SCALE*128), int(11*SCALE)), (0,11*SCALE))
         self.car = Car((int(WIDTH/2*1.21), int(HEIGHT - 40*SCALE)), (57, 50), [self.allSprites, self.collideSprites])
+
+        self.screen.blit(BACKGROUND_IMAGE, (0, 0))
+
+
+    def newGame(self):
+        self.running = True
+        self.drawLevel()
+        self.orders = list()
+        self.orders_time = list()
+        #* Draw Level
+        
         inventory = Inventory(5, (WIDTH*0.73, HEIGHT*0.86), 12)
         self.generated = 3
         self.toNew = 0
@@ -122,13 +165,16 @@ class FarmGo:
 
                         break
                     if self.player.select != {}:
+                        if self.store.open == True:
+                            for i in self.store.itens:
+                                i.interact(self.player)
                         self.player.select.Interact(self.player)
-                        break
+                        
                 if event.button == 2:
                     pass
                 if event.button == 3:
                     if isinstance(self.player.select, Car):
-                        self.player.select.Deliver(self.orders, self.player)
+                        self.toremove = self.player.select.Deliver(self.orders, self.player)
                 if event.button == 4:
                     if self.player.inventory.selected < 4:
                         self.player.inventory.selected += 1
@@ -143,8 +189,7 @@ class FarmGo:
                 if event.button == 1:
                     if self.store.open == True:
                         self.store.open = not self.store.close_button.Interact()
-                        for i in self.store.itens:
-                            i.interact(self.player)
+
                             #self.player.inventory.add(i)
         
         if self.soiltoremove != None:
@@ -233,6 +278,6 @@ class YsortGroup(pygame.sprite.Group):
             self.display_surface.blit(sprite.image, sprite.rect)
 
 game = FarmGo()
-game.newGame()
+game.menu()
 
 

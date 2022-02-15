@@ -17,5 +17,5 @@ class StoreItem:
         if self.rect.collidepoint(pos):
             player.inventory.addItem(self.seed)
             print("bought " + self.seed.fruit.name)
-            player.money -= self.seed.fruit.price
+            player.money -= self.seed.price
             return True

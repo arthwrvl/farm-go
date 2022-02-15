@@ -1,8 +1,10 @@
 import pygame
 from scripts import Seed
 from pygame.locals import *
+from scripts import BadFruit
 from scripts.Can import Can
 from random import randint
+from scripts import Fruit
 
 from scripts.Hoe import Hoe
 
@@ -49,8 +51,7 @@ class Soil(pygame.sprite.Sprite):
             self.image = self.dry[randint(0,2)]
             self.Redraw()
     def bad_fruit(self):
-        pass
-        #print("bad")
+        self.state = 5
         #self.seed.show_fruit(screen, self.size/3, self.size/3)
         #self.state = 5
 
@@ -74,6 +75,8 @@ class Soil(pygame.sprite.Sprite):
             self.image = self.dry[randint(0,2)]
             #print("need water")
             #add water sprite
+        elif self.state == 5:
+            self.image = self.dry[randint(0,2)]
         self.Redraw()
 
     def Interact(self, player, screen):
@@ -93,8 +96,13 @@ class Soil(pygame.sprite.Sprite):
                 if player.inventory.itens[player.inventory.selected].item.use():
                     self.state = 3
                     self.ChangeState()
-        elif self.state == 4:
+        elif self.state == 4 and player.inventory.IsFull() == False and player.inventory.hasItem(self.seed.fruit) == False:
             player.inventory.addItem(self.seed.fruit)
+            self.state = 0
+            self.seed = None
+            self.ChangeState()
+        elif self.state == 5 and player.inventory.IsFull() == False and player.inventory.hasItem(BadFruit.badfruits[Fruit.fruits.index(self.seed.fruit)]) == False:
+            player.inventory.addItem(BadFruit.badfruits[Fruit.fruits.index(self.seed.fruit)])
             self.state = 0
             self.seed = None
             self.ChangeState()
@@ -119,6 +127,7 @@ class Soil(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = self.pos)
 
     def overdraw(self, screen):
+        print(self.state)
         if self.state == 2:
             seed_image = pygame.transform.scale(self.seed.image, (int(self.size/3), int(self.size/3)))
             seed_rect = seed_image.get_rect(center = self.rect.center)
@@ -135,6 +144,16 @@ class Soil(pygame.sprite.Sprite):
                 fruit_image = pygame.transform.scale(fruit_image, (int(self.size*0.8), int(self.size*0.8)))
                 fruit_rect = fruit_image.get_rect(center = self.rect.center)
                 screen.blit(fruit_image, fruit_rect)
+        if self.state == 5:
+            print("bad")
+            if self.seed != None:
+                print("drawing")
+                index = Fruit.fruits.index(self.seed.fruit)
+                fruit_image = BadFruit.badfruits[index].image.copy()
+                fruit_image = pygame.transform.scale(fruit_image, (int(self.size*0.8), int(self.size*0.8)))
+                fruit_rect = fruit_image.get_rect(center = self.rect.center)
+                screen.blit(fruit_image, fruit_rect)
+
 
 '''
 

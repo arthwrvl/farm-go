@@ -54,3 +54,9 @@ class Inventory:
         self.itens[index].count -= 1
         if self.itens[index].count == 0:
             self.itens[index].item = None
+
+    def IsFull(self):
+        for i in range(self.quantity):
+            if self.itens[i].item == None:
+                return False
+        return True

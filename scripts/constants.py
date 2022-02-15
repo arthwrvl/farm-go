@@ -16,3 +16,6 @@ PLAYER_WIDTH = int(SCALE * 16)
 
 def get_font(size):
     return pygame.font.Font("data/fonts/pixelated.ttf", size)
+def get_second_font(size):
+    return pygame.font.Font("data/fonts/game_over.ttf", size)
+
