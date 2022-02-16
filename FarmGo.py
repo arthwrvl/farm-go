@@ -60,7 +60,6 @@ class FarmGo:
                         self.newGame()
             pygame.display.flip()
 
-
     def drawLevel(self):
         #* all sprites that will be rendered
         self.allSprites = YsortGroup()
@@ -81,7 +80,6 @@ class FarmGo:
         self.car = Car((int(WIDTH/2*1.21), int(HEIGHT - 40*SCALE)), (57, 50), [self.allSprites, self.collideSprites])
 
         self.screen.blit(BACKGROUND_IMAGE, (0, 0))
-
 
     def newGame(self):
         self.start = pygame.time.get_ticks() // 1000
@@ -126,6 +124,7 @@ class FarmGo:
 
     def events(self):
         self.current_time = pygame.time.get_ticks() // 1000 - self.start
+        print(self.current_time)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 if self.running:
@@ -143,11 +142,6 @@ class FarmGo:
                     self.player.inventory.selected = 3
                 elif event.key == K_5 or event.key == K_KP_5:
                     self.player.inventory.selected = 4
-            if event.type == KEYUP:
-                if event.key == K_w or event.key == K_s:
-                    self.player.vertical = 0
-                if event.key == K_a or event.key == K_d:
-                    self.player.horizontal = 0
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     self.BUTTON_PRESS_TIME = pygame.time.get_ticks()
@@ -160,7 +154,7 @@ class FarmGo:
                         if self.player.selectedSoil.state == 3:
                             self.growing_seeds.append(self.player.selectedSoil)
                             self.seeds_time.append(self.player.selectedSoil.seed.growing_time)
-                            self.planted_time.append(pygame.time.get_ticks() // 1000)
+                            self.planted_time.append(pygame.time.get_ticks() // 1000 - self.start)
 
                         break
                     if self.player.select != {}:
@@ -241,10 +235,13 @@ class FarmGo:
         for i in range(0, len(self.orders)):
             self.orders[i].DrawOrder(self.screen, i , self.current_time - self.orders_time[i])
             if self.orders[i].waiting_time < self.current_time - self.orders_time[i]:
+                self.player.score -= randint(10*self.orders[i].number, 15*self.orders[i].number)
+                play_sound(WRONG)
                 self.toremove = i
         if len(self.orders) > 0 and self.toremove != 10:
             self.orders.pop(self.toremove)
             self.orders_time.pop(self.toremove)
+
             self.toremove = 10
         pygame.display.flip()
 
@@ -264,7 +261,7 @@ class FarmGo:
                 self.orders.append(order)
                 self.generated = self.current_time
                 self.orders_time.append(self.current_time)
-                self.toNew = randint(8, 15)
+                self.toNew = randint(6, 12)
 
 
 class YsortGroup(pygame.sprite.Group):

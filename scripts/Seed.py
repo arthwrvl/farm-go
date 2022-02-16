@@ -1,6 +1,5 @@
 import pygame
 from scripts import Fruit
-from random import randint
 from pygame.locals import *
 
 

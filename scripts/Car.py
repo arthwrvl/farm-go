@@ -46,7 +46,7 @@ class Car(pygame.sprite.Sprite):
                         play_sound(WRONG)
                     return orderlist.index(i)
             
-            player.score -= randint(10*orderlist[0].number, 15**orderlist[0].number)
+            player.score -= randint(10*orderlist[0].number, 15*orderlist[0].number)
             self.deliver = list()
             print(player.score)
             print(player.money)
