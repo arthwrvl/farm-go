@@ -18,7 +18,7 @@ mixer.init()
 
 
 class FarmGo:
-    BUTTON_PRESS_TIME = AUX_CURRENT_TIME = 0
+    #BUTTON_PRESS_TIME = AUX_CURRENT_TIME = 0
 
     def __init__(self):
         pygame.init()
@@ -257,14 +257,14 @@ class FarmGo:
                 soils.append(solo)
         return soils
     def generateOrder(self):
-            if self.current_time - self.generated > self.toNew:
+            if self.current_time - self.generated > self.toNew and len(self.orders) < 3:
                 play_sound(DING)
                 order = Order.Order()
                 order.show = True
                 self.orders.append(order)
                 self.generated = self.current_time
                 self.orders_time.append(self.current_time)
-                self.toNew = randint(5, 15)
+                self.toNew = randint(8, 15)
 
 
 class YsortGroup(pygame.sprite.Group):
