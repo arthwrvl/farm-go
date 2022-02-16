@@ -233,7 +233,7 @@ class FarmGo:
         if self.current_time >= 240:
             self.game_over.DrawGameOver(self.screen, self.player.score)
             
-            if self.current_time == 5 + 1:
+            if self.current_time == 240 + 1:
                 sleep(10)
                 pygame.quit()
                 exit()
