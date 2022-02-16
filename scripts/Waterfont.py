@@ -39,4 +39,5 @@ class Waterfont(pygame.sprite.Sprite):
         
     def Interact(self, player):
         if isinstance(player.inventory.itens[player.inventory.selected].item, Can):
-            player.inventory.itens[player.inventory.selected].item.value += 1
+            if player.inventory.itens[player.inventory.selected].item.value < 10:
+                player.inventory.itens[player.inventory.selected].item.value += 1

@@ -15,7 +15,11 @@ class StoreItem:
     def interact(self, player):
         pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(pos):
-            player.inventory.addItem(self.seed)
-            print("bought " + self.seed.fruit.name)
-            player.money -= self.seed.price
-            return True
+            if player.money >= self.seed.price:
+                player.inventory.addItem(self.seed)
+                print("bought " + self.seed.fruit.name)
+                player.money -= self.seed.price
+                play_sound(BUY)
+                return True
+            else:
+                play_sound(WRONG)

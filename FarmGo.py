@@ -3,6 +3,7 @@ from random import randint
 from numpy import deprecate_with_doc
 import pygame
 from pygame.locals import *
+from pygame import mixer
 from sys import exit
 from scripts import Soil
 from scripts import Waterfont
@@ -20,6 +21,7 @@ from scripts.Slot import Slot
 from scripts.constants import *
 
 pygame.init()
+mixer.init()
 
 
 #TODO: create the UI
@@ -92,6 +94,9 @@ class FarmGo:
 
 
     def newGame(self):
+        music = mixer.music.load("data/sound/music/background.wav")
+        mixer.music.play(-1)
+
         self.running = True
         self.drawLevel()
         self.orders = list()
@@ -154,6 +159,7 @@ class FarmGo:
                 if event.button == 1:
                     self.BUTTON_PRESS_TIME = pygame.time.get_ticks()
                     if self.player.selectedSoil != {}:
+                        play_sound(SOIL)
                         if self.player.selectedSoil.state == 4:
                             print("clicked on state 4")
                             self.soiltoremove = self.player.selectedSoil
@@ -168,6 +174,7 @@ class FarmGo:
                         if self.store.open == True:
                             for i in self.store.itens:
                                 i.interact(self.player)
+
                         self.player.select.Interact(self.player)
                         
                 if event.button == 2:
@@ -259,12 +266,13 @@ class FarmGo:
         return soils
     def generateOrder(self):
             if self.current_time - self.generated > self.toNew:
+                play_sound(DING)
                 order = Order.Order()
                 order.show = True
                 self.orders.append(order)
                 self.generated = self.current_time
                 self.orders_time.append(self.current_time)
-                self.toNew = randint(15, 25)
+                self.toNew = randint(5, 15)
 
 
 

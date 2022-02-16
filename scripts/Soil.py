@@ -96,16 +96,18 @@ class Soil(pygame.sprite.Sprite):
                 if player.inventory.itens[player.inventory.selected].item.use():
                     self.state = 3
                     self.ChangeState()
-        elif self.state == 4 and player.inventory.IsFull() == False and player.inventory.hasItem(self.seed.fruit) == False:
-            player.inventory.addItem(self.seed.fruit)
-            self.state = 0
-            self.seed = None
-            self.ChangeState()
-        elif self.state == 5 and player.inventory.IsFull() == False and player.inventory.hasItem(BadFruit.badfruits[Fruit.fruits.index(self.seed.fruit)]) == False:
-            player.inventory.addItem(BadFruit.badfruits[Fruit.fruits.index(self.seed.fruit)])
-            self.state = 0
-            self.seed = None
-            self.ChangeState()
+        elif self.state == 4:
+            if player.inventory.hasItem(BadFruit.badfruits[Fruit.fruits.index(self.seed.fruit)]) == False or player.inventory.IsFull() == False:
+                player.inventory.addItem(self.seed.fruit)
+                self.state = 0
+                self.seed = None
+                self.ChangeState()
+        elif self.state == 5:
+            if player.inventory.hasItem(BadFruit.badfruits[Fruit.fruits.index(self.seed.fruit)]) == False or player.inventory.IsFull() == False:
+                player.inventory.addItem(BadFruit.badfruits[Fruit.fruits.index(self.seed.fruit)])
+                self.state = 0
+                self.seed = None
+                self.ChangeState()
         
 
     def Select(self):

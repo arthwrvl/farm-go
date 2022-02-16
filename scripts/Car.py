@@ -2,7 +2,7 @@ from random import randint
 import pygame
 from scripts.Fruit import Fruit
 
-from scripts.constants import SCALE
+from scripts.constants import CORRECT, SCALE, WRONG, play_sound
 
 class Car(pygame.sprite.Sprite):
     def __init__(self, pos, size, groups):
@@ -38,16 +38,19 @@ class Car(pygame.sprite.Sprite):
                         player.money += i.random_fruit.sale_price * i.number
                         player.score += randint(10*i.number, 15*i.number)
                         self.deliver = list()
+                        play_sound(CORRECT)
                     else:
                         player.money += int(i.random_fruit.sale_price * self.deliver.count(i.random_fruit)/2)
                         player.score += randint(5*self.deliver.count(i.random.fruit), 15*self.deliver.count(i.random_fruit))
                         self.deliver = list()
+                        play_sound(WRONG)
                     return orderlist.index(i)
             
             player.score -= randint(10*orderlist[0].number, 15**orderlist[0].number)
             self.deliver = list()
             print(player.score)
             print(player.money)
+            play_sound(WRONG)
             return 0
 
 
