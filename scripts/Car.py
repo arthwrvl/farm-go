@@ -41,7 +41,7 @@ class Car(pygame.sprite.Sprite):
                         play_sound(CORRECT)
                     else:
                         player.money += int(i.random_fruit.sale_price * self.deliver.count(i.random_fruit)/2)
-                        player.score += randint(5*self.deliver.count(i.random.fruit), 15*self.deliver.count(i.random_fruit))
+                        player.score += randint(5*self.deliver.count(i.random_fruit), 15*self.deliver.count(i.random_fruit))
                         self.deliver = list()
                         play_sound(WRONG)
                     return orderlist.index(i)

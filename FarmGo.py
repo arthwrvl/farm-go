@@ -84,6 +84,7 @@ class FarmGo:
 
 
     def newGame(self):
+        self.start = pygame.time.get_ticks() // 1000
         music = mixer.music.load("data/sound/music/background.wav")
         mixer.music.play(-1)
 
@@ -124,7 +125,7 @@ class FarmGo:
             self.events()
 
     def events(self):
-        self.current_time = pygame.time.get_ticks() // 1000
+        self.current_time = pygame.time.get_ticks() // 1000 - self.start
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 if self.running:
@@ -230,13 +231,12 @@ class FarmGo:
         self.info.DrawScore(self.screen, self.player.score)
         self.info.DrawTime(self.screen, self.current_time)
 
-        if self.current_time >= 240:
+        if self.current_time - self.start >= 140:
             self.game_over.DrawGameOver(self.screen, self.player.score)
             
-            if self.current_time == 240 + 1:
-                sleep(10)
-                pygame.quit()
-                exit()
+            if self.current_time - self.start == 140 + 1:
+                sleep(5)
+                self.menu()
 
         for i in range(0, len(self.orders)):
             self.orders[i].DrawOrder(self.screen, i , self.current_time - self.orders_time[i])
