@@ -2,7 +2,7 @@
 
 ### A simple farming game made with Pygame
 
-####
+#### This game was made only for educational purposes. Its the final project for the discipline of programming
 
 ## WASD or Arrow Keys To move the Player
 
