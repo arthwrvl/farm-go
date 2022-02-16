@@ -1,7 +1,6 @@
 import pygame 
 from pygame.locals import *
 
-#TODO: make player be able to throw Hortifrutti here
 
 class Trash(pygame.sprite.Sprite):
     def __init__(self, pos, size, groups):

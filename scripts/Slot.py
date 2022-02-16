@@ -57,5 +57,5 @@ class Slot:
             fill.fill("#2aa5ff")
             screen.blit(bar, (self.rect.left + 1.5 *SCALE, self.rect.top + self.rect.height* 0.85))
             screen.blit(fill, (self.rect.left + 1.5 *SCALE, self.rect.top + self.rect.height* 0.85))
-            #pygame.draw.rect(screen, "#2f0a07", pygame.Rect(self.rect.left + 1.5 *SCALE, self.rect.top + self.rect.height* 0.85, self.rect.width *0.8, self.rect.height*0.08))
-            #pygame.draw.rect(screen, "#2aa5ff", pygame.Rect(self.rect.left + 1.5 *SCALE, self.rect.top + self.rect.height* 0.85, self.rect.width *0.8 * self.item.value/self.item.maxvalue, self.rect.height*0.08))
+
+            

@@ -3,7 +3,6 @@ from pygame.locals import *
 
 from scripts.Can import Can
 
-#TODO: fill water can on interact
 
 class Waterfont(pygame.sprite.Sprite):
     def __init__(self, pos, size, groups):

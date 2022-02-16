@@ -39,10 +39,6 @@ class Soil(pygame.sprite.Sprite):
     
     def AddSeed(self, seed, screen):
         self.seed = seed
-        #print(self.seed.fruit)
-        #self.seed.show_image(self.seed.image, self.size/3, self.size/3)
-        #self.state = 4
-        #self.selected = False
             
     def grow_seed(self):
         #print("grow")
@@ -50,12 +46,10 @@ class Soil(pygame.sprite.Sprite):
             self.state = 4
             self.image = self.dry[randint(0,2)]
             self.Redraw()
+
     def bad_fruit(self):
         self.state = 5
-        #self.seed.show_fruit(screen, self.size/3, self.size/3)
-        #self.state = 5
 
-   
     def ChangeState(self):
         if self.state == 0:
             self.image = self.dry[randint(0,2)]
@@ -67,7 +61,6 @@ class Soil(pygame.sprite.Sprite):
         elif self.state == 2:
             pass
             #print("planted")
-            #self.AddSeed()
             #add seed sprite
         elif self.state == 3:
             pass
@@ -129,7 +122,7 @@ class Soil(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = self.pos)
 
     def overdraw(self, screen):
-        print(self.state)
+        #print(self.state)
         if self.state == 2:
             seed_image = pygame.transform.scale(self.seed.image, (int(self.size/3), int(self.size/3)))
             seed_rect = seed_image.get_rect(center = self.rect.center)
@@ -156,12 +149,3 @@ class Soil(pygame.sprite.Sprite):
                 fruit_rect = fruit_image.get_rect(center = self.rect.center)
                 screen.blit(fruit_image, fruit_rect)
 
-
-'''
-
-'''
-
-        
-
-            
-        
